@@ -1,0 +1,584 @@
+openapi: 3.0.1
+
+info:
+  description: Assembloo Public API for respository search requests and responses
+  version: "0.9.0"
+  title: Repository Search
+  contact:
+    email: support@assembloo.com
+  license:
+    name: Apache 2.0
+    url: 'http://www.apache.org/licenses/LICENSE-2.0.html'
+
+paths: {}
+
+components:
+
+  schemas:
+    SearchRequest:
+      type: object
+      properties:
+        select:
+          $ref: '#/components/schemas/Expressions'
+        where:
+          $ref: '#/components/schemas/Condition'
+        sort:
+          $ref: '#/components/schemas/Sort'
+        group:
+          $ref: '#/components/schemas/Group'
+        facet:
+          $ref: '#/components/schemas/Facets'
+        page:
+          type: integer
+          description: number of the current page
+          default: 0
+        per_page:
+          type: integer
+          description: number of items per page
+          minimum: 1
+          maximum: 100
+          default: 50
+      required:
+        - select
+
+##### SEARCH SELECT COMPONENTS #####
+
+    Expressions:
+      type: object
+      properties: 
+        expressions:
+          type: array
+          items:
+            $ref: '#/components/schemas/Expression'
+
+    Expression:
+      type: object
+      properties:
+        expressionType:
+          type: string
+        alias:
+          type: string
+          description: return the expression under a give name
+      required:
+      - expressionType
+      oneOf:
+      - $ref: '#/components/schemas/FieldExpression'
+      - $ref: '#/components/schemas/SnippetExpression'
+      discriminator:
+        propertyName: expressionType
+        mapping:
+          field: '#/components/schemas/FieldExpression'
+          snippet:  '#/components/schemas/SnippetExpression'
+
+    FieldExpression:
+      allOf:
+      - $ref: '#/components/schemas/Expression'
+      - type: object
+        properties:
+          field:
+            type: string
+            description: field name to return
+        required:
+        - field
+    
+    SnippetExpression:
+      allOf:
+      - $ref: '#/components/schemas/Expression'
+      - type: object
+        description: a snippet expression is when a field is highlighted with a bit of context included on both side
+        properties:
+          field:
+            type: string
+            description: field name to return
+          size:
+            type: integer
+            description: size of the snippet to return
+        required:
+        - field
+    
+##### SEARCH FILTER COMPONENTS #####
+
+    Condition:
+      type: object
+      properties:
+        conditionType:
+          type: string
+      required:
+        - conditionType
+      oneOf:
+      - $ref: '#/components/schemas/OrCondition'
+      - $ref: '#/components/schemas/AndCondition'
+      - $ref: '#/components/schemas/NotCondition'
+      - $ref: '#/components/schemas/ValueCondition'
+      - $ref: '#/components/schemas/DateRangeCondition'
+      - $ref: '#/components/schemas/NumberRangeCondition'
+      - $ref: '#/components/schemas/GeoCondition'
+      - $ref: '#/components/schemas/KeywordsCondition'
+      discriminator:
+        propertyName: conditionType
+        mapping:
+          or:       '#/components/schemas/OrCondition'
+          and:      '#/components/schemas/AndCondition'
+          not:      '#/components/schemas/NotCondition'
+          value:    '#/components/schemas/ValueCondition'
+          daterange: '#/components/schemas/DateRangeCondition'
+          numrange: '#/components/schemas/NumberRangeCondition'
+          geo:      '#/components/schemas/GeoCondition'
+          keywords: '#/components/schemas/KeywordsCondition'
+
+    OrCondition:
+      allOf:
+      - $ref: '#/components/schemas/Condition'
+      - type: object
+        additionalProperties: false
+        properties:
+          conditions:
+            type: array
+            items:
+              $ref: '#/components/schemas/Condition'
+        required: 
+        - filters
+      
+    AndCondition:
+      allOf:
+      - $ref: '#/components/schemas/Condition'
+      - type: object
+        additionalProperties: false
+        properties:
+          conditions:
+            type: array
+            items:
+              $ref: '#/components/schemas/Condition'
+        required: 
+        - filters
+
+    NotCondition:
+      allOf:
+      - $ref: '#/components/schemas/Condition'
+      - type: object
+        additionalProperties: false
+        properties:
+          condition:
+            $ref: '#/components/schemas/Condition'
+        required: 
+        - filter
+
+    ValueCondition:
+      allOf:
+      - $ref: '#/components/schemas/Condition'
+      - type: object
+        description: "a filter by value"
+        properties:
+          field:
+            type: string
+          value:
+            type: string
+        additionalProperties: false
+      
+    DateRangeCondition:
+      allOf:
+      - $ref: '#/components/schemas/Condition'
+      - type: object
+        minProperties: 1
+        maxProperties: 2
+        properties:
+          field:
+            type: string
+          from:
+            type: string
+            format: date
+          to:
+            type: string
+            format: date
+        description: "a filter by date range, to and from bounds are included"
+        additionalProperties: false
+        
+    NumberRangeCondition:
+      allOf:
+      - $ref: '#/components/schemas/Condition'
+      - type: object
+        minProperties: 1
+        maxProperties: 2
+        properties:
+          field:
+            type: string
+          from:
+            type: number
+          to:
+            type: number
+        description: "a filter by number range, to and from bounds are included"
+        additionalProperties: false
+      
+    GeoCondition:
+      allOf:
+      - $ref: '#/components/schemas/Condition'
+      - type: object
+        properties:
+          around:
+            $ref: '#/components/schemas/GeoPoint'
+          distance:
+            type: integer
+          unit:
+            type: string
+            enum:
+              - mm
+              - cm
+              - m 
+              - km
+              - in
+              - yd
+              - mi
+        required:
+          - type
+          - around
+          - distance
+          - unit
+        
+    KeywordsCondition:
+      allOf:
+      - $ref: '#/components/schemas/Condition'
+      - type: object
+        description: what is used to build a traditional search box
+        properties:
+          keywords:
+            type: string
+            description: the keywords the user typed
+          search_fields:
+            type: array
+            items:
+              type: string
+              description: A field we search on
+
+##### SEARCH SORT COMPONENTS #####
+
+    Sort:
+      type: object
+      properties:
+        sortType:
+          type: string
+      required:
+        - sortType
+      oneOf:
+      - $ref: '#/components/schemas/SortByField'
+      - $ref: '#/components/schemas/SortByGeoField'
+      - $ref: '#/components/schemas/SortByFields'
+      - $ref: '#/components/schemas/SortByScore'
+      - $ref: '#/components/schemas/SortByScores'
+      discriminator:
+        propertyName: sortType
+        mapping:
+          field:  '#/components/schemas/SortByField'
+          geo:    '#/components/schemas/SortByGeoField'
+          fields: '#/components/schemas/SortByFields'
+          score:  '#/components/schemas/SortByScore'
+          scores: '#/components/schemas/SortByScores'
+
+    SortByFields:
+      allOf:
+      - $ref: '#/components/schemas/Sort'
+      - type: object
+        properties:
+          fields:
+            type: array
+            items:
+              $ref: '#/components/schemas/SortByField'
+
+    SortByField:
+      allOf:
+      - $ref: '#/components/schemas/Sort'
+      - type: object
+        properties:
+          field:
+            type: string
+            description: the field we want the sort to operate on
+          order:
+            type: string
+            enum: ["asc", "desc"]
+            description: "Which order the sort should apply"
+            default: asc
+        required:
+          - field
+          - order
+        
+    SortByGeoField:
+      allOf:
+      - $ref: '#/components/schemas/SortByField'
+      - type: object
+        description: "Sort by geographical distance from the point given as the geo center"
+        properties:
+          around:
+            $ref: '#/components/schemas/GeoPoint'
+        required:
+        - around
+        
+    SortByScores:
+      allOf:
+      - $ref: '#/components/schemas/Sort'
+      - type: object
+        properties:
+          scores:
+            type: array
+            items:
+              $ref: '#/components/schemas/SortByScore'
+    
+    SortByScore:
+      allOf:
+      - $ref: '#/components/schemas/Sort'
+      - type: object
+        description: you either boost by field name or by field value. You would set only the field property or the field and value properties respectively. The geo_center field is needed if the field chosen is a geo point, because we need to specify the point we're comparing it with.
+        properties:
+          field:
+            type: string
+            description: the field we want the boosting to apply to
+          value:
+            type: string
+            description: the value
+          geo_center:
+            $ref: '#/components/schemas/GeoPoint'
+          boost_factor:
+            type: number
+            format: double
+            default: 1
+        required:
+        - field
+        - boost_factor
+
+##### SEARCH GROUP COMPONENTS #####
+    
+    Group:
+      type: object
+      properties:
+        field:
+          type: string
+          description: field to group by
+        size:
+          type: integer
+          description: how many hits per group we return
+              
+    GeoPoint:
+      type: object
+      properties:
+        lat:
+          type: number
+          format: double
+        lon:
+          type: number
+          format: double
+      required:
+      - lat
+      - lon
+      
+##### SEARCH FACET COMPONENTS #####    
+
+    Facets:
+      type: object
+      properties:
+        facets:
+          type: array
+          items:
+            $ref: '#/components/schemas/Facet'
+          
+    Facet:
+      type: object
+      properties:
+        facetType:
+          type: string
+      required:
+        - facetType
+      oneOf:
+      - $ref: '#/components/schemas/ValueFacet'
+      - $ref: '#/components/schemas/RangeFacet'
+      - $ref: '#/components/schemas/GeoFacet'
+      discriminator:
+        propertyName: facetType
+        mapping:
+          value: '#/components/schemas/ValueFacet'
+          range: '#/components/schemas/RangeFacet'
+          geo:  '#/components/schemas/GeoFacet'
+          
+    ValueFacet:
+      allOf:
+      - $ref: '#/components/schemas/Facet'
+      - type: object
+        properties:
+          field:
+            type: string
+          size:
+            type: integer
+            default: 50
+          sort:
+            type: string
+            enum: ["alphanum", "count"]
+            description: "how do the facets are returned: alphanum means they're returned by name from a to z, count means the biggest buckets are returned first"
+            default: count
+          order:
+            type: string
+            enum: ["asc", "desc"]
+            description: "Which order the sort should apply"
+            default: asc
+        required:
+        - field
+              
+    RangeFacet:
+      allOf:
+      - $ref: '#/components/schemas/Facet'
+      - type: object
+        properties:
+          field:
+            type: string
+          ranges:
+            type: array
+            items:
+              type: object
+              properties:
+                from:
+                  type: string
+                to:
+                  type: string
+                key:
+                  type: string
+                  description: optional name of the range
+              required:
+              - from
+              - to
+        required:
+        - ranges
+        
+    GeoFacet:
+      allOf:
+      - $ref: '#/components/schemas/Facet'
+      - type: object
+        properties:
+          around:
+            $ref: '#/components/schemas/GeoPoint'
+          distances:
+            type: array
+            description: "list of distances, eg 5, 10, 15, 20, it will return 5 buckets: 0-5, 5-10, 10-15, 15-20 and 20+"
+            items:
+              type: string
+          unit:
+            type: string
+            enum:
+              - mm
+              - cm
+              - m 
+              - km
+              - in
+              - yd
+              - mi
+        required:
+          - around
+          - distances
+          - unit
+
+##### SEARCH REPONSE COMPONENTS #####  
+      
+    SearchResponse:
+      type: object
+      properties:
+        result_count:
+          type: integer
+          format: int64
+          description: total number of records found in the datastore
+        pages:
+          type: integer
+          format: int64
+          description: total number of pages that can be returned
+        results:
+          type: array
+          items:
+            $ref: "#/components/schemas/SearchResult"
+        facets:
+          type: array
+          items:
+            $ref: "#/components/schemas/FacetResponse"
+          
+          
+    FacetResponse:
+      type: object
+      properties:
+        facetType:
+          type: string
+      required:
+      - facetType
+      oneOf:
+      - $ref: '#/components/schemas/ValueFacetResponse'
+      - $ref: '#/components/schemas/RangeFacetResponse'
+      - $ref: '#/components/schemas/GeoFacetResponse'
+      discriminator:
+        propertyName: facetType
+        mapping:
+          value: '#/components/schemas/ValueFacetResponse'
+          range: '#/components/schemas/RangeFacetResponse'
+          geo: '#/components/schemas/GeoFacetResponse'
+          
+    ValueFacetResponse:
+      allOf:
+      - $ref: '#/components/schemas/FacetResponse'
+      - type: object
+        properties:
+          values:
+            type: array
+            items:
+              type: object
+              properties:
+                value:
+                  type: string
+                count:
+                  type: integer
+                  format: int64
+
+    RangeFacetResponse:
+      allOf:
+      - $ref: '#/components/schemas/FacetResponse'
+      - type: object
+        properties:
+          ranges:
+            type: array
+            items:
+              type: object
+              properties:
+                from:
+                  type: string
+                to:
+                  type: string
+                key:
+                  type: string
+                  description: optional name of the range
+                count:
+                  type: integer
+                  format: int64
+
+    GeoFacetResponse:
+      allOf:
+      - $ref: '#/components/schemas/FacetResponse'
+      - type: object
+        properties:
+          around:
+            $ref: '#/components/schemas/GeoPoint'
+          distances:
+            type: array
+            items:
+              type: object
+              properties:
+                from:
+                  type: string
+                to:
+                  type: string
+                count:
+                  type: integer
+                  format: int64
+    
+    SearchResult:
+      type: object
+      additionalProperties: {}
+      example:
+        firstname: 
+          raw: john
+        lastname:
+          raw: doe
+        age: 36
+        city: City of London
+        city_snippet: City of <b>London</b>
+          
+# EOF
