@@ -1,0 +1,736 @@
+openapi: 3.0.1
+servers:
+  - description: Assembloo production API
+    url: https://api.assembloo.com/datastores/0.9.0
+info:
+  description: Assembloo Public API for datastores
+  version: "0.9.0"
+  title: Assembloo Datastores
+  contact:
+    email: support@assembloo.com
+  license:
+    name: Apache 2.0
+    url: 'http://www.apache.org/licenses/LICENSE-2.0.html'
+paths:
+##### DATASTORES #####
+  /datastores/search:
+    post:
+      summary: Search the datastores
+      tags:
+      - Datastores
+      requestBody:
+        $ref: "#/components/requestBodies/SearchRequest"
+      responses:
+        '200':
+          $ref: '#/components/responses/SearchResponse'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+          
+  /datastores:
+    get:
+      summary: List the datastores
+      tags:
+      - Datastores
+      parameters:
+      - "$ref": "#/components/parameters/pageParam"
+      responses:
+        '200':
+          $ref: '#/components/responses/SearchResponse'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+    post:
+      summary: Creates a new datastore
+      tags:
+      - Datastores
+      requestBody:
+        $ref: "#/components/requestBodies/DatastoreRequest"
+      responses:
+        '200':
+          description: Datastore successfully created
+          content:
+            application/json:
+              schema:
+                type: string
+                description: the ID of the created object
+        '400':
+          description: Bad request
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '422':
+          description: Invalid datastore data
+  /datastores/{datastoreId}:
+    parameters:
+    - "$ref": "#/components/parameters/datastoreIdParam"
+    get:
+      summary: Returns a datastore by ID
+      tags:
+      - Datastores
+      responses:
+        '200':
+          description: A datastore
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Datastore"
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '404':
+          description: Datastore not found
+    delete:
+      summary: Deletes a datastore by ID
+      tags:
+      - Datastores
+      responses:
+        '200':
+          description: The datastore was deleted
+          content:
+            application/json:
+              schema:
+                type: string
+                description: the ID of the deleted object
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '404':
+          description: Datastore not found
+    put:
+      summary: Updates a datastore by ID
+      tags:
+      - Datastores
+      requestBody:
+        $ref: "#/components/requestBodies/DatastoreRequest"
+      responses:
+        '200':
+          description: The datastore was updated
+          content:
+            application/json:
+              schema:
+                type: string
+                description: the ID of the updated object
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '404':
+          description: Datastore not found
+          
+##### TABLES #####
+  /datastores/{datastoreId}/tables/search:
+    parameters:
+    - "$ref": "#/components/parameters/datastoreIdParam"
+    post:
+      summary: Search the tables of the engine {engineId}
+      requestBody:
+        $ref: "#/components/requestBodies/SearchRequest"
+      tags:
+      - Tables
+      responses:
+        '200':
+          $ref: '#/components/responses/SearchResponse'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+  /datastores/{datastoreId}/tables:
+    parameters:
+    - "$ref": "#/components/parameters/datastoreIdParam"
+    get:
+      summary: List the tables of the engine {engineId}
+      parameters:
+      - "$ref": "#/components/parameters/pageParam"
+      tags:
+      - Tables
+      responses:
+        '200':
+          $ref: '#/components/responses/SearchResponse'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+    post:
+      summary: Create a new table for engine {engineId}
+      tags:
+      - Tables
+      requestBody:
+        $ref: "#/components/requestBodies/TableRequest"
+      responses:
+        '200':
+          description: Table successfully created
+          content:
+            application/json:
+              schema:
+                type: string
+                description: the ID of the created object
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+  /datastores/{datastoreId}/tables/{tableId}:
+    parameters:
+    - "$ref": "#/components/parameters/datastoreIdParam"
+    - "$ref": "#/components/parameters/tableIdParam"
+    get:
+      summary: Returns a table by ID
+      tags:
+      - Tables
+      responses:
+        '200':
+          description: A table
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Table"
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+    delete:
+      summary: Deletes a table by ID
+      tags:
+      - Tables
+      responses:
+        '200':
+          description: The table was deleted
+          content:
+            application/json:
+              schema:
+                type: string
+                description: the ID of the deleted object
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+    put:
+      summary: Updates a table by ID
+      tags:
+      - Tables
+      requestBody:
+        $ref: "#/components/requestBodies/TableRequest"
+      responses:
+        '200':
+          description: The table was updated
+          content:
+            application/json:
+              schema:
+                type: string
+                description: the ID of the updated object
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+          
+
+          
+##### RECORDS #####
+  /datastores/{datastoreId}/tables/{tableId}/records/search:
+    parameters:
+    - "$ref": "#/components/parameters/datastoreIdParam"
+    - "$ref": "#/components/parameters/tableIdParam"
+    post:
+      summary: Search the records of the table {tableId}
+      requestBody:
+        $ref: "#/components/requestBodies/SearchRequest"
+      tags:
+      - Records
+      responses:
+        '200':
+          $ref: '#/components/responses/SearchResponse'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+  /datastores/{datastoreId}/tables/{tableId}/records:
+    parameters:
+    - "$ref": "#/components/parameters/datastoreIdParam"
+    - "$ref": "#/components/parameters/tableIdParam"
+    get:
+      summary: List the records of the table {tableId}
+      parameters:
+      - "$ref": "#/components/parameters/pageParam"
+      tags:
+      - Records
+      responses:
+        '200':
+          $ref: '#/components/responses/SearchResponse'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+    post:
+      summary: Create one or multiple new records for table {tableId}
+      tags:
+      - Records
+      requestBody:
+        $ref: "#/components/requestBodies/RecordRequest"
+      responses:
+        '200':
+          description: Record successfully created
+          content:
+            application/json:
+              schema:
+                type: string
+                description: the ID of the created object
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+  /datastores/{datastoreId}/tables/{tableId}/records/{recordId}:
+    parameters:
+    - "$ref": "#/components/parameters/datastoreIdParam"
+    - "$ref": "#/components/parameters/tableIdParam"
+    - in: path
+      name: recordId
+      schema:
+        type: string
+      required: true
+      description: ID of the record
+    get:
+      summary: Returns a record by ID
+      tags:
+      - Records
+      responses:
+        '200':
+          description: A record
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Record"
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+    delete:
+      summary: Deletes a record by ID
+      tags:
+      - Records
+      responses:
+        '200':
+          description: The record was deleted
+          content:
+            application/json:
+              schema:
+                type: string
+                description: the ID of the deleted object
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+    put:
+      summary: Updates a record by ID
+      tags:
+      - Records
+      requestBody:
+        $ref: "#/components/requestBodies/RecordRequest"
+      responses:
+        '200':
+          description: The record was updated
+          content:
+            application/json:
+              schema:
+                type: string
+                description: the ID of the updated object
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+          
+##### SYNONYMS #####
+  /datastores/{datastoreId}/synonyms/search:
+    parameters:
+    - "$ref": "#/components/parameters/datastoreIdParam"
+    post:
+      summary: Search for synonyms sets
+      requestBody:
+        $ref: '#/components/requestBodies/SearchRequest'
+      tags:
+      - Synonyms
+      responses:
+        '200':
+          $ref: '#/components/responses/SearchResponse'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+
+  /datastores/{datastoreId}/synonyms:
+    parameters:
+    - "$ref": "#/components/parameters/datastoreIdParam"
+    - "$ref": "#/components/parameters/pageParam"
+    get:
+      summary: List the synonyms sets available
+      tags:
+      - Synonyms
+      responses:
+        '200':
+          $ref: '#/components/responses/SearchResponse'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+    post:
+      summary: Create a new synonym set
+      requestBody:
+        $ref: '#/components/requestBodies/SynonymRequest'
+      tags:
+      - Synonyms
+      responses:
+        '200':
+          description: Synonym set successfully created
+          content:
+            application/json:
+              schema:
+                type: string
+                description: the ID of the created object
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+      
+  /datastores/{datastoreId}/synonyms/{synonymSetId}:
+    parameters:
+    - "$ref": "#/components/parameters/datastoreIdParam"
+    - "$ref": "#/components/parameters/synonymSetIdParam"
+    get:
+      summary: Returns a synonym set by ID
+      tags:
+      - Synonyms
+      responses:
+        '200':
+          description: A synonym set
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SynonymSet'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+    delete:
+      summary: Deletes a synonym set by ID
+      tags:
+      - Synonyms
+      responses:
+        '200':
+          description: The synonym set was deleted
+          content:
+            application/json:
+              schema:
+                type: string
+                description: the ID of the deleted object
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+    put:
+      summary: Updates a synonym set by ID
+      tags:
+      - Synonyms
+      requestBody:
+        $ref: '#/components/requestBodies/SynonymRequest'
+      responses:
+        '200':
+          description: The synonym set was updated
+          content:
+            application/json:
+              schema:
+                type: string
+                description: the ID of the updated object
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+  /datastores/{datastoreId}/synonyms/{synonymSetId}/{synonymId}:
+    parameters:
+    - "$ref": "#/components/parameters/datastoreIdParam"
+    - "$ref": "#/components/parameters/synonymSetIdParam"
+    - in: path
+      name: synonymId
+      schema:
+        type: string
+      required: true
+      description: Numeric ID of the synonym entry inside the set
+    get:
+      summary: Returns a synonym entry by ID
+      operationId: getSynonym
+      tags:
+      - Synonyms
+      responses:
+        '200':
+          description: A synonym entry
+          content:
+            application/json:
+              schema:
+                type: string
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+    delete:
+      summary: Deletes a synonym entry by ID
+      operationId: deleteSynonym
+      tags:
+      - Synonyms
+      responses:
+        '200':
+          description: The synonym entry was deleted
+          content:
+            application/json:
+              schema:
+                type: string
+                description: the ID of the deleted object
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+    put:
+      summary: Updates a synonym entry by ID
+      operationId: updateSynonym
+      tags:
+      - Synonyms
+      responses:
+        '200':
+          description: The synonym entry was updated
+          content:
+            application/json:
+              schema:
+                type: string
+                description: the ID of the updated object
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+          
+##### SEARCH PRESETS (TODO) #####
+#  /datastores/{datastoreId}/search-presets:
+#    parameters:
+#    - "$ref": "#/components/parameters/datastoreIdParam"
+#    - "$ref": "#/components/parameters/pageParam"
+#    - "$ref": "#/components/parameters/perPageParam"
+#    get:
+#      summary: List the search preset of the engine {engineId}
+#      tags:
+#      - Search Presets
+#      responses:
+#        '200':
+#          description: A list of all search presets
+#        '401':
+#          $ref: '#/components/responses/UnauthorizedError'
+#    post:
+#      summary: Create a new search preset for engine {engineId}
+#      tags:
+#      - Search Presets
+#      responses:
+#        '200':
+#          description: Search preset successfully created
+#          content:
+#            application/json:
+#              schema:
+#                type: string
+#                description: the ID of the created object
+#        '401':
+#          $ref: '#/components/responses/UnauthorizedError'
+#  /datastores/{datastoreId}/search-presets/{presetId}:
+#    parameters:
+#    - "$ref": "#/components/parameters/datastoreIdParam"
+#    - in: path
+#      name: presetId
+#      schema:
+#        type: integer
+#      required: true
+#      description: ID of the preset
+#    get:
+#      summary: Returns a search channel by ID
+#      tags:
+#      - Search Presets
+#      responses:
+#        '200':
+#          description: A search preset
+#        '401':
+#          $ref: '#/components/responses/UnauthorizedError'
+#    delete:
+#      summary: Deletes a search preset by ID
+#      tags:
+#      - Search Presets
+#      responses:
+#        '200':
+#          description: The search preset was deleted
+#          content:
+#            application/json:
+#              schema:
+#                type: string
+#                description: the ID of the deleted object
+#        '401':
+#          $ref: '#/components/responses/UnauthorizedError'
+#    put:
+#      summary: Updates a search preset by ID
+#      tags:
+#      - Search Presets
+#      responses:
+#        '200':
+#          description: The search preset was updated
+#          content:
+#            application/json:
+#              schema:
+#                type: string
+#                description: the ID of the updated object
+#        '401':
+#          $ref: '#/components/responses/UnauthorizedError'
+          
+components:
+
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  schemas:
+  
+    SynonymSet:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        entries:
+          type: array
+          items:
+            type: string
+      required:
+      - id
+      - name
+      - entries
+    
+    Datastore:
+      type: object
+      properties:
+        id:
+          type: string
+          pattern: "^[a-z]+[a-z0-9\\-\\.]*$"
+        description:
+          type: string
+      required:
+      - name
+      example:
+        id: my-datastore
+        description: description of my datastore
+      
+    Table:
+      type: object
+      properties:
+        id:
+          type: string
+          pattern: "^[a-z]+[a-z0-9\\-\\.]*$"
+        description:
+          type: string
+        fields:
+          type: array
+          items:
+            $ref: '#/components/schemas/Field'
+      required:
+      - id
+      example:
+        id: my-table
+        description: description of my table
+        fields:
+        - name: itemName
+          type: string
+        - name: itemPrice
+          type: decimal
+        - name: itemPurchaseDate
+          type: date
+    
+    Field:
+      type: object
+      properties:
+        name:
+          type: string
+          description: name of the field
+        type:
+          type: string
+          enum:
+          - binary
+          - boolean
+          - date
+          - geo_point
+          - decimal
+          - integer
+          - string
+  
+    Record:
+      type: object
+      properties:
+        id:
+          type: string
+      required:
+      - id
+      additionalProperties: {}
+      example:
+        firstname: john
+        lastname: doe
+        age: 36
+        city: London
+
+  parameters:
+    datastoreIdParam:
+      in: path
+      name: datastoreId
+      schema:
+        type: string
+      required: true
+      description: The datastore id
+    tableIdParam:
+      in: path
+      name: tableId
+      schema:
+        type: string
+      required: true
+      description: ID of the table
+    pageParam:
+      name: page
+      in: query
+      description: Page number
+      schema:
+        type: integer
+        minimum: 1
+        default: 1
+    synonymSetIdParam:
+      in: path
+      name: synonymSetId
+      schema:
+        type: string
+      required: true
+      description: The synonym set id
+        
+  requestBodies:
+    SearchRequest:
+      description: The structure to describe the search wanted and what to return
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: "https://app.swaggerhub.com/apiproxy/schema/file/assembloo/repository-search/0.9.0/swagger.json#/components/schemas/SearchRequest"
+            
+    SynonymRequest:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/SynonymSet"
+    
+    DatastoreRequest:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Datastore"
+            
+    TableRequest:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Table"
+        
+    RecordRequest:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Record"
+
+    SynonymSearchRequest:
+      required: true
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              keywords: 
+                type: string
+            required:
+            - keywords
+                
+  responses:
+    UnauthorizedError:
+      description: Access token is missing or invalid
+      
+    SearchResponse:
+      description: A search response of the given object
+      content:
+        application/json:
+          schema:
+            $ref: "https://app.swaggerhub.com/apiproxy/schema/file/assembloo/repository-search/0.9.0/swagger.json#/components/schemas/SearchResponse"
+  
+tags:
+  - name: Datastores
+    description: "A datastore contains one or more tables. A table holds the records that will search on."
+  - name: Tables
+    description: "A table is where you store records. It describes each field of those records: type, formatting, etc"
+  - name: Records
+    description: "A record is what you're searching: it could be describing a product, a webpage, a document, ..."
+  - name: Synonyms
+    description: "Synonyms allow you to search for words that aren't part of your index but mean the same thing as other words, for ex bike and bicycle"
+#  - name: Search Presets
+#    description: "A search preset defines how a given search endpoint behaves: which tables and fields to search on, do we return facets, etc"
+    
+security:
+  - bearerAuth: []
+    
+# EOF
