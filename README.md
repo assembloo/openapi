@@ -1,1 +1,1 @@
-# openapi
+# Assembloo Open API specifications
