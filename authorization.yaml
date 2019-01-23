@@ -3,6 +3,11 @@ info:
   version: "1.0.0"
   title: Authorization (sub) API
   description: Sub API to handle authorization on a service
+  contact:
+    email: support@assembloo.com
+  license:
+    name: Apache 2.0
+    url: 'http://www.apache.org/licenses/LICENSE-2.0.html'
     
 paths:
 

@@ -6,6 +6,12 @@ info:
   version: "1.0.0"
   title: User manager API
   description: Service to handle user management (authentication, users, groups)
+  contact:
+    email: support@assembloo.com
+  license:
+    name: Apache 2.0
+    url: 'http://www.apache.org/licenses/LICENSE-2.0.html'
+
     
 paths:
 #  /authenticate/oauth/authorize:
