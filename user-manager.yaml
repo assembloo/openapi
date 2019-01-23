@@ -49,6 +49,7 @@ paths:
 #        description: The permissions that the token/code will grant.
   /authenticate/password:
     post:
+      summary: Authenticates the user with an email/password combo
       tags:
       - Authenticate
       requestBody:
@@ -61,6 +62,7 @@ paths:
           
   /authenticate/refresh_token:
     post:
+      summary: Verify and refresh the token if successful
       tags:
       - Authenticate
       requestBody:
