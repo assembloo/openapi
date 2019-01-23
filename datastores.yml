@@ -665,7 +665,7 @@ components:
       content:
         application/json:
           schema:
-            $ref: "https://raw.githubusercontent.com/assembloo/openapi/master/repository-search.yml#/components/schemas/SearchRequest"
+            $ref: "https://raw.githubusercontent.com/assembloo/openapi/1.0.0/repository-search.yml#/components/schemas/SearchRequest"
             
     SynonymRequest:
       required: true
@@ -716,7 +716,7 @@ components:
       content:
         application/json:
           schema:
-            $ref: "https://raw.githubusercontent.com/assembloo/openapi/master/repository-search.yml#/components/schemas/SearchResponse"
+            $ref: "https://raw.githubusercontent.com/assembloo/openapi/1.0.0/repository-search.yml#/components/schemas/SearchResponse"
   
 tags:
   - name: Datastores
