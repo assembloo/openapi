@@ -1,0 +1,529 @@
+openapi: 3.0.1
+servers:
+  - description: Assembloo production API
+    url: https://api.assembloo.com/usermanager/1.0.0
+info:
+  version: "1.0.0"
+  title: User manager API
+  description: Service to handle user management (authentication, users, groups)
+    
+paths:
+#  /authenticate/oauth/authorize:
+#    get:
+#      parameters:
+#      - in: path
+#        name: state
+#        schema:
+#          type: string
+#        required: true
+#        description: State that is passed back to you when the user is redirected back to your application
+#      - in: path
+#        name: scope
+#        schema:
+#          type: string
+#          enum:
+#          - email
+#          - profile
+#        required: true
+#        description: The permissions that the token/code will grant.
+#      - in: path
+#        name: response_type
+#        schema:
+#          type: string
+#          enum:
+#          - code
+#          - token
+#        required: true
+#        description: a code is used to implemented server side flow, a token is used for Single Page Apps
+#      - in: path
+#        name: client_id
+#        schema:
+#          type: string
+#        required: true
+#        description: The permissions that the token/code will grant.
+  /authenticate/password:
+    post:
+      tags:
+      - Authenticate
+      requestBody:
+        $ref: "#/components/requestBodies/LoginRequest"
+      responses:
+        '200':
+          $ref: '#/components/responses/LoginResponse'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+          
+  /authenticate/refresh_token:
+    post:
+      tags:
+      - Authenticate
+      requestBody:
+        $ref: '#/components/requestBodies/RefreshTokenRequest'
+      responses:
+        '200':
+          $ref: '#/components/responses/RefreshTokenResponse'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+  
+  ##### USERS #####
+  /users/search:
+    post:
+      summary: Search the users
+      tags:
+      - Users
+      requestBody:
+        $ref: "#/components/requestBodies/SearchRequest"
+      responses:
+        '200':
+          $ref: '#/components/responses/SearchResponse'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+          
+  /users:
+    get:
+      summary: List the users
+      tags:
+      - Users
+      parameters:
+      - "$ref": "#/components/parameters/pageParam"
+      responses:
+        '200':
+          $ref: '#/components/responses/SearchResponse'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+    post:
+      summary: Creates a new user
+      tags:
+      - Users
+      requestBody:
+        $ref: "#/components/requestBodies/UserRequest"
+      responses:
+        '200':
+          description: User successfully created
+          content:
+            application/json:
+              schema:
+                type: string
+                description: the ID of the created object
+        '400':
+          description: Bad request
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '422':
+          description: Invalid user data
+  /users/{userId}:
+    parameters:
+    - "$ref": "#/components/parameters/userIdParam"
+    get:
+      summary: Returns a user by ID
+      tags:
+      - Users
+      responses:
+        '200':
+          description: A user
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/User"
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '404':
+          description: User not found
+    delete:
+      summary: Deletes a user by ID
+      tags:
+      - Users
+      responses:
+        '200':
+          description: The user was deleted
+          content:
+            application/json:
+              schema:
+                type: string
+                description: the ID of the deleted object
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '404':
+          description: User not found
+    put:
+      summary: Updates a user by ID
+      tags:
+      - Users
+      requestBody:
+        $ref: "#/components/requestBodies/UserRequest"
+      responses:
+        '200':
+          description: The user was updated
+          content:
+            application/json:
+              schema:
+                type: string
+                description: the ID of the updated object
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '404':
+          description: User not found
+  /users/{userId}/password:
+    parameters:
+    - "$ref": "#/components/parameters/userIdParam"
+    post:
+      summary: Sets the user's password
+      tags:
+      - Users
+      requestBody:
+        $ref: "#/components/requestBodies/UserPasswordRequest"
+      responses:
+        '200':
+          description: The password was set
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+  
+  ##### GROUPS #####
+  /groups/search:
+    post:
+      summary: Search the groups
+      tags:
+      - Groups
+      requestBody:
+        $ref: "#/components/requestBodies/SearchRequest"
+      responses:
+        '200':
+          $ref: '#/components/responses/SearchResponse'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+          
+  /groups:
+    get:
+      summary: List the groups
+      tags:
+      - Groups
+      parameters:
+      - "$ref": "#/components/parameters/pageParam"
+      responses:
+        '200':
+          $ref: '#/components/responses/SearchResponse'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+    post:
+      summary: Creates a new group
+      tags:
+      - Groups
+      requestBody:
+        $ref: "#/components/requestBodies/GroupRequest"
+      responses:
+        '200':
+          description: Group successfully created
+          content:
+            application/json:
+              schema:
+                type: string
+                description: the ID of the created object
+        '400':
+          description: Bad request
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '422':
+          description: Invalid group data
+  /groups/{groupId}:
+    parameters:
+    - "$ref": "#/components/parameters/groupIdParam"
+    get:
+      summary: Returns a group by ID
+      tags:
+      - Groups
+      responses:
+        '200':
+          description: A group
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Group"
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '404':
+          description: Group not found
+    delete:
+      summary: Deletes a group by ID
+      tags:
+      - Groups
+      responses:
+        '200':
+          description: The group was deleted
+          content:
+            application/json:
+              schema:
+                type: string
+                description: the ID of the deleted object
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '404':
+          description: Group not found
+    put:
+      summary: Updates a group by ID
+      tags:
+      - Groups
+      requestBody:
+        $ref: "#/components/requestBodies/GroupRequest"
+      responses:
+        '200':
+          description: The group was updated
+          content:
+            application/json:
+              schema:
+                type: string
+                description: the ID of the updated object
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '404':
+          description: Group not found
+  /groups/{groupId}/users/search:
+    parameters:
+    - "$ref": "#/components/parameters/groupIdParam"
+    post:
+      summary: Search the group's users
+      tags:
+      - Groups
+      requestBody:
+        $ref: "#/components/requestBodies/SearchRequest"
+      responses:
+        '200':
+          $ref: '#/components/responses/SearchResponse'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+  /groups/{groupId}/users:
+    parameters:
+    - "$ref": "#/components/parameters/groupIdParam"
+    get:
+      summary: List the group's users
+      tags:
+      - Groups
+      parameters:
+      - "$ref": "#/components/parameters/pageParam"
+      responses:
+        '200':
+          $ref: '#/components/responses/SearchResponse'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+    post:
+      summary: Create a new user in a group
+      tags:
+      - Groups
+      requestBody:
+        $ref: "#/components/requestBodies/UserGroupRequest"
+      responses:
+        '200':
+          description: User successfully added to group
+        '400':
+          description: Bad request
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '422':
+          description: Invalid data
+  /groups/{groupId}/users/{userId}:
+    parameters:
+    - "$ref": "#/components/parameters/groupIdParam"
+    - "$ref": "#/components/parameters/userIdParam"
+    delete:
+      summary: Remove a user from a group
+      tags:
+      - Groups
+      responses:
+        '200':
+          description: User successfully removed from group
+        '400':
+          description: Bad request
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+          
+
+components:
+
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  schemas:
+    User:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        email:
+          type: string
+        firstname:
+          type: string
+        lastname:
+          type: string
+      required:
+      - email
+      example:
+        id: 63312df2-dabd-46c4-a090-b5e628266329
+        email: johndoe@example.com
+        
+    Group:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          type: string
+      required:
+      - name
+      example:
+        id: 63312df2-dabd-46c4-a090-b5e628266329
+        name: "My group"
+    
+    
+        
+    Token:
+      type: object
+      properties:
+        token:
+          type: string
+      example:
+        token: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c"
+      required:
+      - token
+      
+  parameters:
+    pageParam:
+      name: page
+      in: query
+      description: Page number
+      schema:
+        type: integer
+        minimum: 1
+        default: 1
+    userIdParam:
+      in: path
+      name: userId
+      schema:
+        type: string
+        format: uuid
+      required: true
+      description: The user id
+    groupIdParam:
+      in: path
+      name: groupId
+      schema:
+        type: string
+        format: uuid
+      required: true
+      description: The group id
+  
+  requestBodies:
+    SearchRequest:
+      description: The structure to describe the search wanted and what to return
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: "https://raw.githubusercontent.com/assembloo/openapi/master/repository-search.yml#/components/schemas/SearchRequest"
+    
+    LoginRequest:
+      required: true
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              email:
+                type: string
+              password:
+                type: string
+            required:
+            - username
+            - password
+            
+    RefreshTokenRequest:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Token"
+            
+    UserRequest:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/User"
+            
+    UserPasswordRequest:
+      required: true
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              old_password:
+                type: string
+                description: if there is one, we need the old password for security
+              new_password:
+                type: string
+                description: the new password we want for that user
+            required:
+            - new_password
+            
+    GroupRequest:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Group"
+            
+    UserGroupRequest:
+      required: true
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              groupId:
+                type: string
+              userId:
+                type: string
+            required:
+            - groupId
+            - userId
+            
+  responses:
+    UnauthorizedError:
+      description: Access token is missing or invalid
+      
+    LoginResponse:
+      description: The login response
+      content:
+        application/json:
+          schema:
+            allOf:
+            - $ref: "#/components/schemas/Token"
+            - $ref: "#/components/schemas/User"
+            
+    RefreshTokenResponse:
+      description: The token refresh response
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Token"
+
+    SearchResponse:
+      description: A search response of the given object
+      content:
+        application/json:
+          schema:
+            $ref: "https://raw.githubusercontent.com/assembloo/openapi/master/repository-search.yml#/components/schemas/SearchResponse"
+  
+tags:
+  - name: Authenticate
+  - name: Users
+  - name: Groups
+  
+security:
+  - bearerAuth: []
+  
+# EOF

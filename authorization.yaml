@@ -1,0 +1,332 @@
+openapi: 3.0.1
+info:
+  version: "1.0.0"
+  title: Authorization (sub) API
+  description: Sub API to handle authorization on a service
+    
+paths:
+
+#  /users/{userId}/is_allowed:
+#    parameters:
+#    - "$ref": "#/components/parameters/userIdParam"
+#    get:
+#      summary: Find out if a user is allowed to perform an operation
+#      tags:
+#      - Users
+#      parameters:
+#        - in: path
+#          name: permission
+#          schema:
+#            type: string
+#          required: true
+#          description: Permission string (e.g. groups:read:456)
+#      responses:
+#        '200':
+#          description: The user was authorized
+#        '401':
+#          $ref: '#/components/responses/UnauthorizedError'
+
+##### ROLE MEMBERSHIP #####
+
+  /memberships/search:
+    post:
+      summary: Search the memberships
+      tags:
+      - Memberships
+      requestBody:
+        $ref: "#/components/requestBodies/SearchRequest"
+      responses:
+        '200':
+          $ref: '#/components/responses/SearchResponse'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+  /memberships:
+    get:
+      summary: List the memberships
+      tags:
+      - Memberships
+      parameters:
+      - "$ref": "#/components/parameters/pageParam"
+      responses:
+        '200':
+          $ref: '#/components/responses/SearchResponse'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+    post:
+      summary: Creates a membership
+      tags:
+      - Memberships
+      requestBody:
+        $ref: "#/components/requestBodies/MembershipRequest"
+      responses:
+        '200':
+          description: Membership successfully created
+          content:
+            application/json:
+              schema:
+                type: string
+                description: the ID of the created object
+        '400':
+          description: Bad request
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '422':
+          description: Invalid membership data
+  /memberships/{membershipId}:
+    parameters:
+    - "$ref": "#/components/parameters/membershipIdParam"
+    get:
+      summary: Returns a membership by ID
+      tags:
+      - Memberships
+      responses:
+        '200':
+          description: A membership
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Membership"
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '404':
+          description: Membership not found
+    delete:
+      summary: Deletes a membership by ID
+      tags:
+      - Memberships
+      responses:
+        '200':
+          description: The membership was deleted
+          content:
+            application/json:
+              schema:
+                type: string
+                description: the ID of the deleted object
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '404':
+          description: Membership not found
+  
+##### API KEYS #####
+
+  /keys/search:
+    post:
+      summary: Search the keys
+      tags:
+      - Keys
+      requestBody:
+        $ref: "#/components/requestBodies/SearchRequest"
+      responses:
+        '200':
+          $ref: '#/components/responses/SearchResponse'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+          
+  /keys:
+    get:
+      summary: List the keys
+      tags:
+      - Keys
+      parameters:
+      - "$ref": "#/components/parameters/pageParam"
+      responses:
+        '200':
+          $ref: '#/components/responses/SearchResponse'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+    post:
+      summary: Creates a new key
+      tags:
+      - Keys
+      requestBody:
+        $ref: "#/components/requestBodies/KeyRequest"
+      responses:
+        '200':
+          $ref: '#/components/responses/TokenResponse'
+        '400':
+          description: Bad request
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '422':
+          description: Invalid key data
+  /keys/{keyId}:
+    parameters:
+    - "$ref": "#/components/parameters/keyIdParam"
+    get:
+      summary: Returns a key by ID
+      tags:
+      - Keys
+      responses:
+        '200':
+          description: A key
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Key"
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '404':
+          description: Key not found
+    delete:
+      summary: Deletes a key by ID
+      tags:
+      - Keys
+      responses:
+        '200':
+          description: The key was deleted
+          content:
+            application/json:
+              schema:
+                type: string
+                description: the ID of the deleted object
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '404':
+          description: Key not found
+  
+components:
+
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  schemas:
+
+    Membership:
+      type: object
+      description: describes the fact that someone/something is part of/attached to a owner
+      properties:
+        id:
+          type: string
+          format: uuid
+        owner_id:
+          type: string
+          format: uuid
+          description: e.g. a groupId
+        object_id:
+          type: string
+          format: uuid
+        role_id:
+          type: string
+          format: uuid
+          description: the role of the owner on the object, gives a list of permissions on the object to the owner
+      required:
+      - owner_id
+      - object_id
+      - role_id
+      example:
+        id: 63312df2-dabd-46c4-a090-b5e628266111
+        ownerId: 97292dac-b0ab-4fca-970f-d0f9578e47db
+        objectId: 042f4ef2-d798-4e94-84b7-41a76275d878
+        role_id: b771bf49-469c-4116-a2bb-26624eb9c40c
+
+    Key:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          type: string
+        description:
+          type: string
+        object_id:
+          type: string
+          format: uuid
+        role:
+          type: string
+          description: the role that key gives on the object
+      required:
+      - name
+      - object_id
+      example:
+        id: 63312df2-dabd-46c4-a090-b5e628266329
+        name: "My key"
+        object_id: 0e899dd1-1b67-41f0-9cef-7d144364fcc7
+        
+  parameters:
+    pageParam:
+      name: page
+      in: query
+      description: Page number
+      schema:
+        type: integer
+        minimum: 1
+        default: 1
+    membershipIdParam:
+      in: path
+      name: membershipId
+      schema:
+        type: string
+        format: uuid
+      required: true
+      description: The role membership id
+    keyIdParam:
+      in: path
+      name: keyId
+      schema:
+        type: string
+        format: uuid
+      required: true
+      description: The key id
+  
+  requestBodies:
+    SearchRequest:
+      description: The structure to describe the search wanted and what to return
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: "https://raw.githubusercontent.com/assembloo/openapi/master/repository-search.yml#/components/schemas/SearchRequest"
+            
+    MembershipRequest:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Membership"
+    
+    KeyRequest:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Key"
+            
+  responses:
+    UnauthorizedError:
+      description: Access token is missing or invalid
+      
+    SearchResponse:
+      description: A search response of the given object
+      content:
+        application/json:
+          schema:
+            $ref: "https://raw.githubusercontent.com/assembloo/openapi/master/repository-search.yml#/components/schemas/SearchResponse"
+            
+        
+    TokenResponse:
+      description: A token that can be used as a key
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              token:
+                type: string
+            example:
+              token: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c"
+            required:
+            - token
+  
+tags:
+  - name: Memberships
+  - name: Keys
+  
+  
+security:
+  - bearerAuth: []
+  
+# EOF
