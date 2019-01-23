@@ -4,7 +4,7 @@ servers:
     url: https://api.assembloo.com/datastores/0.9.0
 info:
   description: Assembloo Public API for datastores
-  version: "0.9.0"
+  version: "1.0.0"
   title: Assembloo Datastores
   contact:
     email: support@assembloo.com
