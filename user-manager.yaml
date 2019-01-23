@@ -49,6 +49,7 @@ paths:
 #        description: The permissions that the token/code will grant.
   /authenticate/password:
     post:
+      operationId: authenticate
       summary: Authenticates the user with an email/password combo
       tags:
       - Authenticate
@@ -62,6 +63,7 @@ paths:
           
   /authenticate/refresh_token:
     post:
+      operationId: refreshToken
       summary: Verify and refresh the token if successful
       tags:
       - Authenticate
@@ -175,6 +177,7 @@ paths:
     parameters:
     - "$ref": "#/components/parameters/userIdParam"
     post:
+      operationId: setPassword
       summary: Sets the user's password
       tags:
       - Users
@@ -288,6 +291,7 @@ paths:
     parameters:
     - "$ref": "#/components/parameters/groupIdParam"
     post:
+      operationId: searchUsers
       summary: Search the group's users
       tags:
       - Groups
@@ -302,6 +306,7 @@ paths:
     parameters:
     - "$ref": "#/components/parameters/groupIdParam"
     get:
+      operationId: listUsers
       summary: List the group's users
       tags:
       - Groups
@@ -313,7 +318,8 @@ paths:
         '401':
           $ref: '#/components/responses/UnauthorizedError'
     post:
-      summary: Create a new user in a group
+      operationId: addUser
+      summary: Add a user to the group
       tags:
       - Groups
       requestBody:
@@ -332,6 +338,7 @@ paths:
     - "$ref": "#/components/parameters/groupIdParam"
     - "$ref": "#/components/parameters/userIdParam"
     delete:
+      operationId: removeUser
       summary: Remove a user from a group
       tags:
       - Groups
