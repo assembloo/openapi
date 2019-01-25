@@ -111,6 +111,23 @@ paths:
           $ref: '#/components/responses/UnauthorizedError'
         '404':
           description: Membership not found
+  /memberships/is_allowed:
+    get:
+      summary: Find out if we're allowed to perform an operation
+      tags:
+      - Memberships
+      parameters:
+        - in: path
+          name: permission
+          schema:
+            type: string
+          required: true
+          description: Permission string (e.g. groups:read:456)
+      responses:
+        '200':
+          description: We're authorized
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
   
 ##### API KEYS #####
 
@@ -227,6 +244,16 @@ components:
         objectId: 042f4ef2-d798-4e94-84b7-41a76275d878
         role_id: b771bf49-469c-4116-a2bb-26624eb9c40c
 
+    Token:
+      type: object
+      properties:
+        token:
+          type: string
+      example:
+        token: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c"
+      required:
+      - token
+
     Key:
       type: object
       properties:
@@ -310,21 +337,13 @@ components:
         application/json:
           schema:
             $ref: "https://raw.githubusercontent.com/assembloo/openapi/1.0.0/repository-search.yml#/components/schemas/SearchResponse"
-            
-        
+
     TokenResponse:
       description: A token that can be used as a key
       content:
         application/json:
           schema:
-            type: object
-            properties:
-              token:
-                type: string
-            example:
-              token: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c"
-            required:
-            - token
+            $ref: '#/components/schemas/Token'
   
 tags:
   - name: Memberships
