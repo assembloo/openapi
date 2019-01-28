@@ -182,7 +182,7 @@ paths:
       tags:
       - Users
       requestBody:
-        $ref: "#/components/requestBodies/UserPasswordRequest"
+        $ref: "#/components/requestBodies/UserPasswordReq"
       responses:
         '200':
           description: The password was set
@@ -360,12 +360,22 @@ components:
       bearerFormat: JWT
 
   schemas:
+    EmailLogin:
+      type: object
+      properties:
+        email:
+          type: string
+        password:
+          type: string
+      required:
+      - username
+      - password
+  
     User:
       type: object
       properties:
         id:
           type: string
-          format: uuid
         email:
           type: string
         firstname:
@@ -383,7 +393,6 @@ components:
       properties:
         id:
           type: string
-          format: uuid
         name:
           type: string
       required:
@@ -391,9 +400,7 @@ components:
       example:
         id: 63312df2-dabd-46c4-a090-b5e628266329
         name: "My group"
-    
-    
-        
+
     Token:
       type: object
       properties:
@@ -402,6 +409,47 @@ components:
       example:
         token: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c"
       required:
+      - token
+      
+    NewPasswordRequest:
+      type: object
+      properties:
+        old_password:
+          type: string
+          description: if there is one, we need the old password for security
+        new_password:
+          type: string
+          description: the new password we want for that user
+      required:
+      - new_password
+      
+    UserIdGroupId:
+      type: object
+      properties:
+        groupId:
+          type: string
+        userId:
+          type: string
+      required:
+      - groupId
+      - userId
+
+    LoginResponse:      
+      type: object
+      properties:
+        id:
+          type: string
+        email:
+          type: string
+        firstname:
+          type: string
+        lastname:
+          type: string
+        token:
+          type: string
+      required:
+      - email
+      - id
       - token
       
   parameters:
@@ -418,7 +466,6 @@ components:
       name: userId
       schema:
         type: string
-        format: uuid
       required: true
       description: The user id
     groupIdParam:
@@ -426,7 +473,6 @@ components:
       name: groupId
       schema:
         type: string
-        format: uuid
       required: true
       description: The group id
   
@@ -444,15 +490,8 @@ components:
       content:
         application/json:
           schema:
-            type: object
-            properties:
-              email:
-                type: string
-              password:
-                type: string
-            required:
-            - username
-            - password
+            $ref: '#/components/schemas/EmailLogin'
+            
             
     RefreshTokenRequest:
       required: true
@@ -468,21 +507,12 @@ components:
           schema:
             $ref: "#/components/schemas/User"
             
-    UserPasswordRequest:
+    UserPasswordReq:
       required: true
       content:
         application/json:
           schema:
-            type: object
-            properties:
-              old_password:
-                type: string
-                description: if there is one, we need the old password for security
-              new_password:
-                type: string
-                description: the new password we want for that user
-            required:
-            - new_password
+            $ref: "#/components/schemas/NewPasswordRequest"
             
     GroupRequest:
       required: true
@@ -496,15 +526,7 @@ components:
       content:
         application/json:
           schema:
-            type: object
-            properties:
-              groupId:
-                type: string
-              userId:
-                type: string
-            required:
-            - groupId
-            - userId
+            $ref: "#/components/schemas/UserIdGroupId"
             
   responses:
     UnauthorizedError:
@@ -515,9 +537,7 @@ components:
       content:
         application/json:
           schema:
-            allOf:
-            - $ref: "#/components/schemas/Token"
-            - $ref: "#/components/schemas/User"
+            $ref: "#/components/schemas/LoginResponse"
             
     RefreshTokenResponse:
       description: The token refresh response
