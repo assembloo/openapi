@@ -368,7 +368,7 @@ components:
         password:
           type: string
       required:
-      - username
+      - email
       - password
   
     User:
@@ -382,8 +382,11 @@ components:
           type: string
         lastname:
           type: string
+        password:
+          type: string
       required:
       - email
+      - password
       example:
         id: 63312df2-dabd-46c4-a090-b5e628266329
         email: johndoe@example.com
