@@ -165,7 +165,12 @@ paths:
         $ref: "#/components/requestBodies/KeyRequest"
       responses:
         '200':
-          $ref: '#/components/responses/TokenResponse'
+          description: Key successfully created
+          content:
+            application/json:
+              schema:
+                type: string
+                description: the ID of the created object
         '400':
           description: Bad request
         '401':
@@ -206,6 +211,21 @@ paths:
           $ref: '#/components/responses/UnauthorizedError'
         '404':
           description: Key not found
+  /keys/{keyId}/token:
+    parameters:
+    - "$ref": "#/components/parameters/keyIdParam"
+    get:
+      summary: Returns the token for the key
+      operationId: getToken
+      tags:
+      - Keys
+      responses:
+        '200':
+          $ref: '#/components/responses/TokenResponse'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '404':
+          description: Key not found
   
 components:
 
@@ -223,17 +243,13 @@ components:
       properties:
         id:
           type: string
-          format: uuid
         owner_id:
           type: string
-          format: uuid
           description: e.g. a groupId
         object_id:
           type: string
-          format: uuid
         role_id:
           type: string
-          format: uuid
           description: the role of the owner on the object, gives a list of permissions on the object to the owner
       required:
       - owner_id
@@ -260,17 +276,17 @@ components:
       properties:
         id:
           type: string
-          format: uuid
         name:
           type: string
         description:
           type: string
         object_id:
           type: string
-          format: uuid
         role:
           type: string
           description: the role that key gives on the object
+        token:
+          type: string
       required:
       - name
       - object_id
@@ -293,7 +309,6 @@ components:
       name: membershipId
       schema:
         type: string
-        format: uuid
       required: true
       description: The role membership id
     keyIdParam:
@@ -301,7 +316,6 @@ components:
       name: keyId
       schema:
         type: string
-        format: uuid
       required: true
       description: The key id
   
