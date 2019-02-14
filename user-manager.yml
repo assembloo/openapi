@@ -14,40 +14,110 @@ info:
 
     
 paths:
-#  /authenticate/oauth/authorize:
-#    get:
-#      parameters:
-#      - in: path
-#        name: state
-#        schema:
-#          type: string
-#        required: true
-#        description: State that is passed back to you when the user is redirected back to your application
-#      - in: path
-#        name: scope
-#        schema:
-#          type: string
-#          enum:
-#          - email
-#          - profile
-#        required: true
-#        description: The permissions that the token/code will grant.
-#      - in: path
-#        name: response_type
-#        schema:
-#          type: string
-#          enum:
-#          - code
-#          - token
-#        required: true
-#        description: a code is used to implemented server side flow, a token is used for Single Page Apps
-#      - in: path
-#        name: client_id
-#        schema:
-#          type: string
-#        required: true
-#        description: The permissions that the token/code will grant.
-  /authenticate/password:
+
+  ##### USER MANAGER #####
+  /search:
+    post:
+      summary: Search the user managers
+      tags:
+      - UserManagers
+      requestBody:
+        $ref: "#/components/requestBodies/SearchRequest"
+      responses:
+        '200':
+          $ref: '#/components/responses/SearchResponse'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+          
+  /:
+    get:
+      summary: List the user managers
+      tags:
+      - UserManagers
+      parameters:
+      - "$ref": "#/components/parameters/pageParam"
+      responses:
+        '200':
+          $ref: '#/components/responses/SearchResponse'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+    post:
+      summary: Creates a new user manager
+      tags:
+      - UserManagers
+      requestBody:
+        $ref: "#/components/requestBodies/UserManagerRequest"
+      responses:
+        '200':
+          description: User manager successfully created
+          content:
+            application/json:
+              schema:
+                type: string
+                description: the ID of the created object
+        '400':
+          description: Bad request
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '422':
+          description: Invalid user manager data
+  /{userManagerId}:
+    parameters:
+    - "$ref": "#/components/parameters/userManagerIdParam"
+    get:
+      summary: Returns a user manager by ID
+      tags:
+      - UserManagers
+      responses:
+        '200':
+          description: A user manager
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UserManager"
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '404':
+          description: User manager not found
+    delete:
+      summary: Deletes a user manager by ID
+      tags:
+      - UserManagers
+      responses:
+        '200':
+          description: The user manager was deleted
+          content:
+            application/json:
+              schema:
+                type: string
+                description: the ID of the deleted object
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '404':
+          description: User manager not found
+    put:
+      summary: Updates a user manager by ID
+      tags:
+      - UserManagers
+      requestBody:
+        $ref: "#/components/requestBodies/UserManagerRequest"
+      responses:
+        '200':
+          description: The user manager was updated
+          content:
+            application/json:
+              schema:
+                type: string
+                description: the ID of the updated object
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '404':
+          description: User manager not found
+          
+  ##### AUTHENTICATE #####
+  /{userManagerId}/authenticate/password:
+    parameters:
+    - "$ref": "#/components/parameters/userManagerIdParam"
     post:
       operationId: authenticate
       summary: Authenticates the user with an email/password combo
@@ -61,22 +131,61 @@ paths:
         '401':
           $ref: '#/components/responses/UnauthorizedError'
           
-  /authenticate/refresh_token:
-    post:
-      operationId: refreshToken
-      summary: Verify and refresh the token if successful
-      tags:
-      - Authenticate
-      requestBody:
-        $ref: '#/components/requestBodies/RefreshTokenRequest'
-      responses:
-        '200':
-          $ref: '#/components/responses/RefreshTokenResponse'
-        '401':
-          $ref: '#/components/responses/UnauthorizedError'
-  
+#  /{userManagerId}/authenticate/check_token:
+#    parameters:
+#    - "$ref": "#/components/parameters/userManagerIdParam"
+#    post:
+#      operationId: checkToken
+#      summary: Verify the token
+#      tags:
+#      - Authenticate
+#      requestBody:
+#        $ref: '#/components/requestBodies/CheckTokenRequest'
+#      responses:
+#        '200':
+#          description: The token is valid
+#        '400':
+#          description: The token is not valid
+#        '401':
+#          $ref: '#/components/responses/UnauthorizedError'
+  #  /authenticate/oauth/authorize:
+  #    get:
+  #      parameters:
+  #      - in: path
+  #        name: state
+  #        schema:
+  #          type: string
+  #        required: true
+  #        description: State that is passed back to you when the user is redirected back to your application
+  #      - in: path
+  #        name: scope
+  #        schema:
+  #          type: string
+  #          enum:
+  #          - email
+  #          - profile
+  #        required: true
+  #        description: The permissions that the token/code will grant.
+  #      - in: path
+  #        name: response_type
+  #        schema:
+  #          type: string
+  #          enum:
+  #          - code
+  #          - token
+  #        required: true
+  #        description: a code is used to implemented server side flow, a token is used for Single Page Apps
+  #      - in: path
+  #        name: client_id
+  #        schema:
+  #          type: string
+  #        required: true
+  #        description: The permissions that the token/code will grant.
+
   ##### USERS #####
-  /users/search:
+  /{userManagerId}/users/search:
+    parameters:
+    - "$ref": "#/components/parameters/userManagerIdParam"
     post:
       summary: Search the users
       tags:
@@ -89,7 +198,9 @@ paths:
         '401':
           $ref: '#/components/responses/UnauthorizedError'
           
-  /users:
+  /{userManagerId}/users:
+    parameters:
+    - "$ref": "#/components/parameters/userManagerIdParam"
     get:
       summary: List the users
       tags:
@@ -121,8 +232,9 @@ paths:
           $ref: '#/components/responses/UnauthorizedError'
         '422':
           description: Invalid user data
-  /users/{userId}:
+  /{userManagerId}/users/{userId}:
     parameters:
+    - "$ref": "#/components/parameters/userManagerIdParam"
     - "$ref": "#/components/parameters/userIdParam"
     get:
       summary: Returns a user by ID
@@ -173,8 +285,9 @@ paths:
           $ref: '#/components/responses/UnauthorizedError'
         '404':
           description: User not found
-  /users/{userId}/password:
+  /{userManagerId}/users/{userId}/password:
     parameters:
+    - "$ref": "#/components/parameters/userManagerIdParam"
     - "$ref": "#/components/parameters/userIdParam"
     post:
       operationId: setPassword
@@ -189,8 +302,102 @@ paths:
         '401':
           $ref: '#/components/responses/UnauthorizedError'
   
+  ##### ACCESS TOKENS #####
+  
+  /{userManagerId}/users/{userId}/access_tokens:
+    parameters:
+    - "$ref": "#/components/parameters/userManagerIdParam"
+    - "$ref": "#/components/parameters/userIdParam"
+    get:
+      summary: List the access tokens
+      tags:
+      - Access Tokens
+      parameters:
+      - "$ref": "#/components/parameters/pageParam"
+      responses:
+        '200':
+          $ref: '#/components/responses/SearchResponse'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+    post:
+      summary: Creates a new access token
+      tags:
+      - Access Tokens
+      requestBody:
+        $ref: "#/components/requestBodies/AccessTokenRequest"
+      responses:
+        '200':
+          description: Access token successfully created
+          content:
+            application/json:
+              schema:
+                type: string
+                description: the ID of the created object
+        '400':
+          description: Bad request
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '422':
+          description: Invalid access token data
+  /{userManagerId}/users/{userId}/access_tokens/{accessTokenId}:
+    parameters:
+    - "$ref": "#/components/parameters/userManagerIdParam"
+    - "$ref": "#/components/parameters/userIdParam"
+    - "$ref": "#/components/parameters/accessTokenIdParam"
+    get:
+      summary: Returns an access token by ID
+      tags:
+      - Access Tokens
+      responses:
+        '200':
+          description: An access token
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AccessToken"
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '404':
+          description: Access token not found
+    delete:
+      summary: Deletes an access token by ID
+      tags:
+      - Access Tokens
+      responses:
+        '200':
+          description: The access token was deleted
+          content:
+            application/json:
+              schema:
+                type: string
+                description: the ID of the deleted object
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '404':
+          description: User not found
+    put:
+      summary: Updates an access token by ID
+      tags:
+      - Access Tokens
+      requestBody:
+        $ref: "#/components/requestBodies/AccessTokenRequest"
+      responses:
+        '200':
+          description: The access token was updated
+          content:
+            application/json:
+              schema:
+                type: string
+                description: the ID of the updated object
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '404':
+          description: Access token not found
+  
   ##### GROUPS #####
-  /groups/search:
+  /{userManagerId}/groups/search:
+    parameters:
+    - "$ref": "#/components/parameters/userManagerIdParam"
     post:
       summary: Search the groups
       tags:
@@ -203,7 +410,9 @@ paths:
         '401':
           $ref: '#/components/responses/UnauthorizedError'
           
-  /groups:
+  /{userManagerId}/groups:
+    parameters:
+    - "$ref": "#/components/parameters/userManagerIdParam"
     get:
       summary: List the groups
       tags:
@@ -235,8 +444,9 @@ paths:
           $ref: '#/components/responses/UnauthorizedError'
         '422':
           description: Invalid group data
-  /groups/{groupId}:
+  /{userManagerId}/groups/{groupId}:
     parameters:
+    - "$ref": "#/components/parameters/userManagerIdParam"
     - "$ref": "#/components/parameters/groupIdParam"
     get:
       summary: Returns a group by ID
@@ -287,8 +497,9 @@ paths:
           $ref: '#/components/responses/UnauthorizedError'
         '404':
           description: Group not found
-  /groups/{groupId}/users/search:
+  /{userManagerId}/groups/{groupId}/users/search:
     parameters:
+    - "$ref": "#/components/parameters/userManagerIdParam"
     - "$ref": "#/components/parameters/groupIdParam"
     post:
       operationId: searchUsers
@@ -302,8 +513,9 @@ paths:
           $ref: '#/components/responses/SearchResponse'
         '401':
           $ref: '#/components/responses/UnauthorizedError'
-  /groups/{groupId}/users:
+  /{userManagerId}/groups/{groupId}/users:
     parameters:
+    - "$ref": "#/components/parameters/userManagerIdParam"
     - "$ref": "#/components/parameters/groupIdParam"
     get:
       operationId: listUsers
@@ -333,8 +545,9 @@ paths:
           $ref: '#/components/responses/UnauthorizedError'
         '422':
           description: Invalid data
-  /groups/{groupId}/users/{userId}:
+  /{userManagerId}/groups/{groupId}/users/{userId}:
     parameters:
+    - "$ref": "#/components/parameters/userManagerIdParam"
     - "$ref": "#/components/parameters/groupIdParam"
     - "$ref": "#/components/parameters/userIdParam"
     delete:
@@ -360,6 +573,20 @@ components:
       bearerFormat: JWT
 
   schemas:
+    UserManager:
+      type: object
+      properties:
+        id:
+          type: string
+          pattern: "^[a-z]+[a-z0-9\\-\\.]*$"
+        description:
+          type: string
+      required:
+      - name
+      example:
+        id: my-user-manager
+        description: description of my user manager
+  
     EmailLogin:
       type: object
       properties:
@@ -370,6 +597,16 @@ components:
       required:
       - email
       - password
+    
+    Token:
+      type: object
+      properties:
+        token:
+          type: string
+      example:
+        token: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c"
+      required:
+      - token
   
     User:
       type: object
@@ -391,6 +628,24 @@ components:
         id: 63312df2-dabd-46c4-a090-b5e628266329
         email: johndoe@example.com
         
+    AccessToken:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        startDate:
+          type: string
+        endDate:
+          type: string
+      required:
+      - id
+      - name
+      example:
+        id: 63312df2-dabd-46c4-a090-b5e628266329
+        name: my token
+        
     Group:
       type: object
       properties:
@@ -403,16 +658,6 @@ components:
       example:
         id: 63312df2-dabd-46c4-a090-b5e628266329
         name: "My group"
-
-    Token:
-      type: object
-      properties:
-        token:
-          type: string
-      example:
-        token: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c"
-      required:
-      - token
       
     NewPasswordRequest:
       type: object
@@ -464,6 +709,15 @@ components:
         type: integer
         minimum: 1
         default: 1
+        
+    userManagerIdParam:
+      in: path
+      name: userManagerId
+      schema:
+        type: string
+      required: true
+      description: The user manager instance id
+      
     userIdParam:
       in: path
       name: userId
@@ -471,6 +725,15 @@ components:
         type: string
       required: true
       description: The user id
+      
+    accessTokenIdParam:
+      in: path
+      name: accessTokenId
+      schema:
+        type: string
+      required: true
+      description: The access token id
+      
     groupIdParam:
       in: path
       name: groupId
@@ -488,6 +751,13 @@ components:
           schema:
             $ref: "https://raw.githubusercontent.com/assembloo/openapi/1.0.0/repository-search.yml#/components/schemas/SearchRequest"
     
+    UserManagerRequest:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/UserManager'
+            
     LoginRequest:
       required: true
       content:
@@ -495,8 +765,7 @@ components:
           schema:
             $ref: '#/components/schemas/EmailLogin'
             
-            
-    RefreshTokenRequest:
+    CheckTokenRequest:
       required: true
       content:
         application/json:
@@ -517,6 +786,13 @@ components:
           schema:
             $ref: "#/components/schemas/NewPasswordRequest"
             
+    AccessTokenRequest:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/AccessToken"
+        
     GroupRequest:
       required: true
       content:
@@ -541,13 +817,6 @@ components:
         application/json:
           schema:
             $ref: "#/components/schemas/LoginResponse"
-            
-    RefreshTokenResponse:
-      description: The token refresh response
-      content:
-        application/json:
-          schema:
-            $ref: "#/components/schemas/Token"
 
     SearchResponse:
       description: A search response of the given object
@@ -557,8 +826,10 @@ components:
             $ref: "https://raw.githubusercontent.com/assembloo/openapi/1.0.0/repository-search.yml#/components/schemas/SearchResponse"
   
 tags:
+  - name: UserManagers
   - name: Authenticate
   - name: Users
+  - name: Access Tokens
   - name: Groups
   
 security:
