@@ -218,6 +218,8 @@ components:
             $ref: '#/components/schemas/GeoPoint'
           distance:
             type: integer
+          field:
+            type: string  
           unit:
             type: string
             enum:
@@ -232,6 +234,7 @@ components:
           - type
           - around
           - distance
+          - field
           - unit
         
     KeywordsCondition:
@@ -456,6 +459,8 @@ components:
             description: "list of distances, eg 5, 10, 15, 20, it will return 5 buckets: 0-5, 5-10, 10-15, 15-20 and 20+"
             items:
               type: string
+          field:
+            type: string  
           unit:
             type: string
             enum:
@@ -469,6 +474,7 @@ components:
         required:
           - around
           - distances
+          - field
           - unit
 
 ##### SEARCH REPONSE COMPONENTS #####  
