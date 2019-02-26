@@ -109,22 +109,22 @@ components:
       - $ref: '#/components/schemas/OrFilter'
       - $ref: '#/components/schemas/AndFilter'
       - $ref: '#/components/schemas/NotFilter'
-      - $ref: '#/components/schemas/ValueFilter'
+      - $ref: '#/components/schemas/ExactMatchFilter'
       - $ref: '#/components/schemas/DateRangeFilter'
       - $ref: '#/components/schemas/NumberRangeFilter'
       - $ref: '#/components/schemas/GeoDistanceFilter'
-      - $ref: '#/components/schemas/KeywordsFilter'
+      - $ref: '#/components/schemas/FullTextFilter'
       discriminator:
         propertyName: filterType
         mapping:
-          or:       '#/components/schemas/OrFilter'
-          and:      '#/components/schemas/AndFilter'
-          not:      '#/components/schemas/NotFilter'
-          value:    '#/components/schemas/ValueFilter'
-          daterange: '#/components/schemas/DateRangeFilter'
-          numrange: '#/components/schemas/NumberRangeFilter'
-          geo:      '#/components/schemas/GeoDistanceFilter'
-          keywords: '#/components/schemas/KeywordsFilter'
+          or:           '#/components/schemas/OrFilter'
+          and:          '#/components/schemas/AndFilter'
+          not:          '#/components/schemas/NotFilter'
+          exactmatch:   '#/components/schemas/ExactMatchFilter'
+          daterange:    '#/components/schemas/DateRangeFilter'
+          numrange:     '#/components/schemas/NumberRangeFilter'
+          geo:          '#/components/schemas/GeoDistanceFilter'
+          fulltext:     '#/components/schemas/FullTextFilter'
 
     OrFilter:
       allOf:
@@ -163,11 +163,11 @@ components:
         required: 
         - filter
 
-    ValueFilter:
+    ExactMatchFilter:
       allOf:
       - $ref: '#/components/schemas/Filter'
       - type: object
-        description: "a filter by value"
+        description: "exact match of the specified value"
         properties:
           field:
             type: string
@@ -237,20 +237,20 @@ components:
           - field
           - unit
         
-    KeywordsFilter:
+    FullTextFilter:
       allOf:
       - $ref: '#/components/schemas/Filter'
       - type: object
         description: what is used to build a traditional search box
         properties:
-          keywords:
+          text:
             type: string
-            description: the keywords the user typed
-          search_fields:
+            description: the text to search
+          fields:
             type: array
             items:
               type: string
-              description: A field we search on
+              description: A field to search on
 
 ##### SEARCH SORT COMPONENTS #####
 
