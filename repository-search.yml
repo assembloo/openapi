@@ -112,7 +112,7 @@ components:
       - $ref: '#/components/schemas/ValueFilter'
       - $ref: '#/components/schemas/DateRangeFilter'
       - $ref: '#/components/schemas/NumberRangeFilter'
-      - $ref: '#/components/schemas/GeoFilter'
+      - $ref: '#/components/schemas/GeoDistanceFilter'
       - $ref: '#/components/schemas/KeywordsFilter'
       discriminator:
         propertyName: filterType
@@ -123,7 +123,7 @@ components:
           value:    '#/components/schemas/ValueFilter'
           daterange: '#/components/schemas/DateRangeFilter'
           numrange: '#/components/schemas/NumberRangeFilter'
-          geo:      '#/components/schemas/GeoFilter'
+          geo:      '#/components/schemas/GeoDistanceFilter'
           keywords: '#/components/schemas/KeywordsFilter'
 
     OrFilter:
@@ -209,7 +209,7 @@ components:
         description: "a filter by number range, to and from bounds are included"
         additionalProperties: false
       
-    GeoFilter:
+    GeoDistanceFilter:
       allOf:
       - $ref: '#/components/schemas/Filter'
       - type: object
