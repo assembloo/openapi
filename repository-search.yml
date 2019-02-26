@@ -21,7 +21,7 @@ components:
         select:
           $ref: '#/components/schemas/Expressions'
         where:
-          $ref: '#/components/schemas/Condition'
+          $ref: '#/components/schemas/Filter'
         sort:
           $ref: '#/components/schemas/Sort'
         group:
@@ -98,74 +98,74 @@ components:
     
 ##### SEARCH FILTER COMPONENTS #####
 
-    Condition:
+    Filter:
       type: object
       properties:
-        conditionType:
+        filterType:
           type: string
       required:
-        - conditionType
+        - filterType
       oneOf:
-      - $ref: '#/components/schemas/OrCondition'
-      - $ref: '#/components/schemas/AndCondition'
-      - $ref: '#/components/schemas/NotCondition'
-      - $ref: '#/components/schemas/ValueCondition'
-      - $ref: '#/components/schemas/DateRangeCondition'
-      - $ref: '#/components/schemas/NumberRangeCondition'
-      - $ref: '#/components/schemas/GeoCondition'
-      - $ref: '#/components/schemas/KeywordsCondition'
+      - $ref: '#/components/schemas/OrFilter'
+      - $ref: '#/components/schemas/AndFilter'
+      - $ref: '#/components/schemas/NotFilter'
+      - $ref: '#/components/schemas/ValueFilter'
+      - $ref: '#/components/schemas/DateRangeFilter'
+      - $ref: '#/components/schemas/NumberRangeFilter'
+      - $ref: '#/components/schemas/GeoFilter'
+      - $ref: '#/components/schemas/KeywordsFilter'
       discriminator:
-        propertyName: conditionType
+        propertyName: filterType
         mapping:
-          or:       '#/components/schemas/OrCondition'
-          and:      '#/components/schemas/AndCondition'
-          not:      '#/components/schemas/NotCondition'
-          value:    '#/components/schemas/ValueCondition'
-          daterange: '#/components/schemas/DateRangeCondition'
-          numrange: '#/components/schemas/NumberRangeCondition'
-          geo:      '#/components/schemas/GeoCondition'
-          keywords: '#/components/schemas/KeywordsCondition'
+          or:       '#/components/schemas/OrFilter'
+          and:      '#/components/schemas/AndFilter'
+          not:      '#/components/schemas/NotFilter'
+          value:    '#/components/schemas/ValueFilter'
+          daterange: '#/components/schemas/DateRangeFilter'
+          numrange: '#/components/schemas/NumberRangeFilter'
+          geo:      '#/components/schemas/GeoFilter'
+          keywords: '#/components/schemas/KeywordsFilter'
 
-    OrCondition:
+    OrFilter:
       allOf:
-      - $ref: '#/components/schemas/Condition'
+      - $ref: '#/components/schemas/Filter'
       - type: object
         additionalProperties: false
         properties:
-          conditions:
+          filters:
             type: array
             items:
-              $ref: '#/components/schemas/Condition'
+              $ref: '#/components/schemas/Filter'
         required: 
         - filters
       
-    AndCondition:
+    AndFilter:
       allOf:
-      - $ref: '#/components/schemas/Condition'
+      - $ref: '#/components/schemas/Filter'
       - type: object
         additionalProperties: false
         properties:
-          conditions:
+          filters:
             type: array
             items:
-              $ref: '#/components/schemas/Condition'
+              $ref: '#/components/schemas/Filter'
         required: 
         - filters
 
-    NotCondition:
+    NotFilter:
       allOf:
-      - $ref: '#/components/schemas/Condition'
+      - $ref: '#/components/schemas/Filter'
       - type: object
         additionalProperties: false
         properties:
-          condition:
-            $ref: '#/components/schemas/Condition'
+          filter:
+            $ref: '#/components/schemas/Filter'
         required: 
         - filter
 
-    ValueCondition:
+    ValueFilter:
       allOf:
-      - $ref: '#/components/schemas/Condition'
+      - $ref: '#/components/schemas/Filter'
       - type: object
         description: "a filter by value"
         properties:
@@ -175,9 +175,9 @@ components:
             type: string
         additionalProperties: false
       
-    DateRangeCondition:
+    DateRangeFilter:
       allOf:
-      - $ref: '#/components/schemas/Condition'
+      - $ref: '#/components/schemas/Filter'
       - type: object
         minProperties: 1
         maxProperties: 2
@@ -193,9 +193,9 @@ components:
         description: "a filter by date range, to and from bounds are included"
         additionalProperties: false
         
-    NumberRangeCondition:
+    NumberRangeFilter:
       allOf:
-      - $ref: '#/components/schemas/Condition'
+      - $ref: '#/components/schemas/Filter'
       - type: object
         minProperties: 1
         maxProperties: 2
@@ -209,9 +209,9 @@ components:
         description: "a filter by number range, to and from bounds are included"
         additionalProperties: false
       
-    GeoCondition:
+    GeoFilter:
       allOf:
-      - $ref: '#/components/schemas/Condition'
+      - $ref: '#/components/schemas/Filter'
       - type: object
         properties:
           around:
@@ -237,9 +237,9 @@ components:
           - field
           - unit
         
-    KeywordsCondition:
+    KeywordsFilter:
       allOf:
-      - $ref: '#/components/schemas/Condition'
+      - $ref: '#/components/schemas/Filter'
       - type: object
         description: what is used to build a traditional search box
         properties:
