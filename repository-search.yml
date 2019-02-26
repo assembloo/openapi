@@ -28,11 +28,11 @@ components:
           $ref: '#/components/schemas/Group'
         facet:
           $ref: '#/components/schemas/Facets'
-        page:
+        pageIndex:
           type: integer
-          description: number of the current page
+          description: zero-based number of the current page
           default: 0
-        per_page:
+        pageSize:
           type: integer
           description: number of items per page
           minimum: 1
