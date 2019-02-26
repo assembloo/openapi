@@ -486,10 +486,6 @@ components:
           type: integer
           format: int64
           description: total number of records found in the datastore
-        pages:
-          type: integer
-          format: int64
-          description: total number of pages that can be returned
         results:
           type: array
           items:
