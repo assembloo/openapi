@@ -1,10 +1,10 @@
 openapi: 3.0.1
 servers:
   - description: Assembloo production API
-    url: https://api.assembloo.com/datastores/1.0.0
+    url: https://api.assembloo.com/datastores/v1
 info:
   description: Assembloo Public API for datastores
-  version: "1.0.0"
+  version: "v1"
   title: Assembloo Datastores
   contact:
     email: support@assembloo.com
@@ -13,31 +13,31 @@ info:
     url: 'http://www.apache.org/licenses/LICENSE-2.0.html'
 paths:
 ##### DATASTORES #####
-  /search:
-    post:
-      summary: Search the datastores
-      tags:
-      - Datastores
-      requestBody:
-        $ref: "#/components/requestBodies/SearchRequest"
-      responses:
-        '200':
-          $ref: '#/components/responses/SearchResponse'
-        '401':
-          $ref: '#/components/responses/UnauthorizedError'
+#  /search:
+#    post:
+#      summary: Search the datastores
+#      tags:
+#      - Datastores
+#      requestBody:
+#        $ref: "#/components/requestBodies/SearchRequest"
+#      responses:
+#        '200':
+##          $ref: '#/components/responses/SearchResponse'
+#        '401':
+#          $ref: '#/components/responses/UnauthorizedError'
           
   /:
-    get:
-      summary: List the datastores
-      tags:
-      - Datastores
-      parameters:
-      - "$ref": "#/components/parameters/pageParam"
-      responses:
-        '200':
-          $ref: '#/components/responses/SearchResponse'
-        '401':
-          $ref: '#/components/responses/UnauthorizedError'
+#    get:
+#      summary: List the datastores
+#      tags:
+#      - Datastores
+#      parameters:
+#      - "$ref": "#/components/parameters/pageParam"
+#      responses:
+#        '200':
+#          $ref: '#/components/responses/SearchResponse'
+#        '401':
+#          $ref: '#/components/responses/UnauthorizedError'
     post:
       summary: Creates a new datastore
       tags:
@@ -92,24 +92,24 @@ paths:
           $ref: '#/components/responses/UnauthorizedError'
         '404':
           description: Datastore not found
-    put:
-      summary: Updates a datastore by ID
-      tags:
-      - Datastores
-      requestBody:
-        $ref: "#/components/requestBodies/DatastoreRequest"
-      responses:
-        '200':
-          description: The datastore was updated
-          content:
-            application/json:
-              schema:
-                type: string
-                description: the ID of the updated object
-        '401':
-          $ref: '#/components/responses/UnauthorizedError'
-        '404':
-          description: Datastore not found
+#    put:
+#      summary: Updates a datastore by ID
+#      tags:
+#      - Datastores
+#      requestBody:
+#        $ref: "#/components/requestBodies/DatastoreRequest"
+#      responses:
+#        '200':
+#          description: The datastore was updated
+#          content:
+#            application/json:
+#              schema:
+#                type: string
+#                description: the ID of the updated object
+#        '401':
+#          $ref: '#/components/responses/UnauthorizedError'
+#        '404':
+#          description: Datastore not found
           
 ##### TABLES #####
   /{datastoreId}/tables/search:
@@ -562,14 +562,10 @@ components:
       properties:
         id:
           type: string
-          pattern: "^[a-z]+[a-z0-9\\-\\.]*$"
-        description:
-          type: string
       required:
-      - name
+      - id
       example:
         id: my-datastore
-        description: description of my datastore
       
     Table:
       type: object
@@ -585,6 +581,7 @@ components:
             $ref: '#/components/schemas/Field'
       required:
       - id
+      - fields
       example:
         id: my-table
         description: description of my table
