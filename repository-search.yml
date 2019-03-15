@@ -482,18 +482,81 @@ components:
     SearchResponse:
       type: object
       properties:
-        result_count:
+        total_count:
           type: integer
           format: int64
           description: total number of records found in the datastore
         results:
-          type: array
-          items:
-            $ref: "#/components/schemas/SearchResult"
+            $ref: "#/components/schemas/ResultSet"
         facets:
           type: array
           items:
             $ref: "#/components/schemas/FacetResponse"
+
+    ResultSet:
+      type: object
+      properties:
+        schema : 
+          $ref: "#/components/schemas/Schema"
+        items:
+          type: array
+          items:
+            $ref: "#/components/schemas/SearchResult"
+      required:
+      - schema
+      - items
+
+    SearchResult:
+      type: object
+      additionalProperties: {}
+      example:
+        firstname: 
+          raw: john
+        lastname:
+          raw: doe
+        age: 36
+        city: City of London
+        city_snippet: City of <b>London</b>
+
+    Schema:
+      type: object
+      properties:
+        id:
+          type: string
+          pattern: "^[a-z]+[a-z0-9\\-\\.]*$"
+        fields:
+          type: array
+          items:
+            $ref: '#/components/schemas/Field'
+      required:
+      - id
+      - fields
+      example:
+        id: my-schema
+        fields:
+        - name: itemName
+          type: string
+        - name: itemPrice
+          type: decimal
+        - name: itemPurchaseDate
+          type: date
+    
+    Field:
+      type: object
+      properties:
+        name:
+          type: string
+          description: name of the field
+        type:
+          type: string
+          enum:
+          - binary
+          - boolean
+          - date
+          - geo_point
+          - decimal
+          - integer
+          - string
           
           
     FacetResponse:
@@ -570,17 +633,5 @@ components:
                 count:
                   type: integer
                   format: int64
-    
-    SearchResult:
-      type: object
-      additionalProperties: {}
-      example:
-        firstname: 
-          raw: john
-        lastname:
-          raw: doe
-        age: 36
-        city: City of London
-        city_snippet: City of <b>London</b>
           
 # EOF
