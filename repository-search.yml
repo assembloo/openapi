@@ -23,7 +23,9 @@ components:
         where:
           $ref: '#/components/schemas/Filter'
         sort:
-          $ref: '#/components/schemas/Sort'
+          type: array
+          items:
+            $ref: '#/components/schemas/SortClause'
         group:
           $ref: '#/components/schemas/Group'
         facet:
@@ -40,6 +42,25 @@ components:
           default: 50
       required:
         - select
+
+##### GLOBAL COMPONENTS #####
+    SortOrder:
+      type: string
+      enum: 
+        - asc
+        - desc
+      description: "Sort order: asc or desc"
+
+    UnitOfLength:
+      type: string
+      enum:
+        - mm
+        - cm
+        - m 
+        - km
+        - in
+        - yd
+        - mi
 
 ##### SEARCH SELECT COMPONENTS #####
 
@@ -61,9 +82,6 @@ components:
           description: return the expression under a give name
       required:
       - expressionType
-      oneOf:
-      - $ref: '#/components/schemas/FieldExpression'
-      - $ref: '#/components/schemas/SnippetExpression'
       discriminator:
         propertyName: expressionType
         mapping:
@@ -80,6 +98,18 @@ components:
             description: field name to return
         required:
         - field
+
+    FieldType:
+      type: string
+      enum:
+        - binary
+        - boolean
+        - date
+        - geo_point
+        - decimal
+        - integer
+        - string
+      description: "The type of the field"
     
     SnippetExpression:
       allOf:
@@ -105,15 +135,6 @@ components:
           type: string
       required:
         - filterType
-      oneOf:
-      - $ref: '#/components/schemas/OrFilter'
-      - $ref: '#/components/schemas/AndFilter'
-      - $ref: '#/components/schemas/NotFilter'
-      - $ref: '#/components/schemas/ExactMatchFilter'
-      - $ref: '#/components/schemas/DateRangeFilter'
-      - $ref: '#/components/schemas/NumberRangeFilter'
-      - $ref: '#/components/schemas/GeoDistanceFilter'
-      - $ref: '#/components/schemas/FullTextFilter'
       discriminator:
         propertyName: filterType
         mapping:
@@ -221,15 +242,7 @@ components:
           field:
             type: string  
           unit:
-            type: string
-            enum:
-              - mm
-              - cm
-              - m 
-              - km
-              - in
-              - yd
-              - mi
+            $ref: '#/components/schemas/UnitOfLength'            
         required:
           - type
           - around
@@ -254,54 +267,32 @@ components:
 
 ##### SEARCH SORT COMPONENTS #####
 
-    Sort:
+    SortClause:
       type: object
       properties:
-        sortType:
+        type:
           type: string
+        sortOrder:
+          $ref: '#/components/schemas/SortOrder'
       required:
-        - sortType
-      oneOf:
-      - $ref: '#/components/schemas/SortByField'
-      - $ref: '#/components/schemas/SortByGeoField'
-      - $ref: '#/components/schemas/SortByFields'
-      - $ref: '#/components/schemas/SortByScore'
-      - $ref: '#/components/schemas/SortByScores'
+      - type
       discriminator:
-        propertyName: sortType
+        propertyName: type
         mapping:
           field:  '#/components/schemas/SortByField'
           geo:    '#/components/schemas/SortByGeoField'
-          fields: '#/components/schemas/SortByFields'
           score:  '#/components/schemas/SortByScore'
-          scores: '#/components/schemas/SortByScores'
-
-    SortByFields:
-      allOf:
-      - $ref: '#/components/schemas/Sort'
-      - type: object
-        properties:
-          fields:
-            type: array
-            items:
-              $ref: '#/components/schemas/SortByField'
 
     SortByField:
       allOf:
-      - $ref: '#/components/schemas/Sort'
+      - $ref: '#/components/schemas/SortClause'
       - type: object
         properties:
           field:
             type: string
             description: the field we want the sort to operate on
-          order:
-            type: string
-            enum: ["asc", "desc"]
-            description: "Which order the sort should apply"
-            default: asc
         required:
-          - field
-          - order
+        - field
         
     SortByGeoField:
       allOf:
@@ -314,37 +305,11 @@ components:
         required:
         - around
         
-    SortByScores:
-      allOf:
-      - $ref: '#/components/schemas/Sort'
-      - type: object
-        properties:
-          scores:
-            type: array
-            items:
-              $ref: '#/components/schemas/SortByScore'
-    
     SortByScore:
       allOf:
-      - $ref: '#/components/schemas/Sort'
+      - $ref: '#/components/schemas/SortClause'
       - type: object
         description: you either boost by field name or by field value. You would set only the field property or the field and value properties respectively. The geo_center field is needed if the field chosen is a geo point, because we need to specify the point we're comparing it with.
-        properties:
-          field:
-            type: string
-            description: the field we want the boosting to apply to
-          value:
-            type: string
-            description: the value
-          geo_center:
-            $ref: '#/components/schemas/GeoPoint'
-          boost_factor:
-            type: number
-            format: double
-            default: 1
-        required:
-        - field
-        - boost_factor
 
 ##### SEARCH GROUP COMPONENTS #####
     
@@ -388,17 +353,22 @@ components:
           type: string
       required:
         - facetType
-      oneOf:
-      - $ref: '#/components/schemas/ValueFacet'
-      - $ref: '#/components/schemas/RangeFacet'
-      - $ref: '#/components/schemas/GeoFacet'
       discriminator:
         propertyName: facetType
         mapping:
           value: '#/components/schemas/ValueFacet'
           range: '#/components/schemas/RangeFacet'
           geo:  '#/components/schemas/GeoFacet'
-          
+       
+    ValueFacetOrder:
+      type: string
+      enum: 
+        - alphanum_asc
+        - alphanum_desc
+        - count_desc
+      description: "alphanum_asc: sorted from a to z, alphanum_desc: sorted from z to a"
+      default: count
+   
     ValueFacet:
       allOf:
       - $ref: '#/components/schemas/Facet'
@@ -409,16 +379,10 @@ components:
           size:
             type: integer
             default: 50
-          sort:
-            type: string
-            enum: ["alphanum", "count"]
-            description: "how do the facets are returned: alphanum means they're returned by name from a to z, count means the biggest buckets are returned first"
-            default: count
-          order:
-            type: string
-            enum: ["asc", "desc"]
-            description: "Which order the sort should apply"
-            default: asc
+          sortOrder:
+            $ref: '#/components/schemas/ValueFacetOrder'
+            description: "alphanum means that facets are returned by name from a to z, count means the biggest buckets are returned first"
+            default: count_desc
         required:
         - field
               
@@ -462,15 +426,7 @@ components:
           field:
             type: string  
           unit:
-            type: string
-            enum:
-              - mm
-              - cm
-              - m 
-              - km
-              - in
-              - yd
-              - mi
+            $ref: '#/components/schemas/UnitOfLength'
         required:
           - around
           - distances
@@ -548,16 +504,8 @@ components:
           type: string
           description: name of the field
         type:
-          type: string
-          enum:
-          - binary
-          - boolean
-          - date
-          - geo_point
-          - decimal
-          - integer
-          - string
-          
+          $ref: '#/components/schemas/FieldType'
+          description: type of the field
           
     FacetResponse:
       type: object
@@ -566,10 +514,6 @@ components:
           type: string
       required:
       - facetType
-      oneOf:
-      - $ref: '#/components/schemas/ValueFacetResponse'
-      - $ref: '#/components/schemas/RangeFacetResponse'
-      - $ref: '#/components/schemas/GeoFacetResponse'
       discriminator:
         propertyName: facetType
         mapping:
