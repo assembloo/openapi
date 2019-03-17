@@ -13,23 +13,26 @@ info:
 paths: {}
 
 components:
-
   schemas:
     SearchRequest:
       type: object
       properties:
-        select:
-          $ref: '#/components/schemas/Expressions'
+        selectExpressions:
+          type: array
+          items:
+            $ref: '#/components/schemas/SelectExpression'
         where:
           $ref: '#/components/schemas/Filter'
-        sort:
+        sortClauses:
           type: array
           items:
             $ref: '#/components/schemas/SortClause'
         group:
           $ref: '#/components/schemas/Group'
-        facet:
-          $ref: '#/components/schemas/Facets'
+        aggregations:
+          type: array
+          items:
+            $ref: '#/components/schemas/Aggregation'
         pageIndex:
           type: integer
           description: zero-based number of the current page
@@ -40,6 +43,8 @@ components:
           minimum: 1
           maximum: 100
           default: 50
+        relevance:
+          $ref: '#/components/schemas/Relevance'
       required:
         - select
 
@@ -63,16 +68,15 @@ components:
         - mi
 
 ##### SEARCH SELECT COMPONENTS #####
-
-    Expressions:
+    SelectExpressions:
       type: object
       properties: 
         expressions:
           type: array
           items:
-            $ref: '#/components/schemas/Expression'
+            $ref: '#/components/schemas/SelectExpression'
 
-    Expression:
+    SelectExpression:
       type: object
       properties:
         expressionType:
@@ -85,12 +89,12 @@ components:
       discriminator:
         propertyName: expressionType
         mapping:
-          field: '#/components/schemas/FieldExpression'
-          snippet:  '#/components/schemas/SnippetExpression'
+          field: '#/components/schemas/SelectField'
+          snippet:  '#/components/schemas/SelectSnippet'
 
-    FieldExpression:
+    SelectField:
       allOf:
-      - $ref: '#/components/schemas/Expression'
+      - $ref: '#/components/schemas/SelectExpression'
       - type: object
         properties:
           field:
@@ -111,9 +115,9 @@ components:
         - string
       description: "The type of the field"
     
-    SnippetExpression:
+    SelectSnippet:
       allOf:
-      - $ref: '#/components/schemas/Expression'
+      - $ref: '#/components/schemas/SelectExpression'
       - type: object
         description: a snippet expression is when a field is highlighted with a bit of context included on both side
         properties:
@@ -127,7 +131,6 @@ components:
         - field
     
 ##### SEARCH FILTER COMPONENTS #####
-
     Filter:
       type: object
       properties:
@@ -266,7 +269,6 @@ components:
               description: A field to search on
 
 ##### SEARCH SORT COMPONENTS #####
-
     SortClause:
       type: object
       properties:
@@ -312,7 +314,6 @@ components:
         description: you either boost by field name or by field value. You would set only the field property or the field and value properties respectively. The geo_center field is needed if the field chosen is a geo point, because we need to specify the point we're comparing it with.
 
 ##### SEARCH GROUP COMPONENTS #####
-    
     Group:
       type: object
       properties:
@@ -336,31 +337,23 @@ components:
       - lat
       - lon
       
-##### SEARCH FACET COMPONENTS #####    
-
-    Facets:
+##### AGGREGATIONS #####
+    Aggregation:
       type: object
       properties:
-        facets:
-          type: array
-          items:
-            $ref: '#/components/schemas/Facet'
-          
-    Facet:
-      type: object
-      properties:
-        facetType:
+        type:
           type: string
       required:
-        - facetType
+        - type
       discriminator:
-        propertyName: facetType
+        propertyName: type
         mapping:
-          value: '#/components/schemas/ValueFacet'
-          range: '#/components/schemas/RangeFacet'
-          geo:  '#/components/schemas/GeoFacet'
+          value: '#/components/schemas/GroupByValueAggregation'
+          range: '#/components/schemas/GroupByRangeAggregation'
+          geo:  '#/components/schemas/GroupByDistanceAggregation'
+          statistics:  '#/components/schemas/StatisticsAggregation'
        
-    ValueFacetOrder:
+    GroupByValueAggregationOrder:
       type: string
       enum: 
         - alphanum_asc
@@ -369,9 +362,9 @@ components:
       description: "alphanum_asc: sorted from a to z, alphanum_desc: sorted from z to a"
       default: count
    
-    ValueFacet:
+    GroupByValueAggregation:
       allOf:
-      - $ref: '#/components/schemas/Facet'
+      - $ref: '#/components/schemas/Aggregation'
       - type: object
         properties:
           field:
@@ -380,15 +373,15 @@ components:
             type: integer
             default: 50
           sortOrder:
-            $ref: '#/components/schemas/ValueFacetOrder'
+            $ref: '#/components/schemas/GroupByValueAggregationOrder'
             description: "alphanum means that facets are returned by name from a to z, count means the biggest buckets are returned first"
             default: count_desc
         required:
         - field
               
-    RangeFacet:
+    GroupByRangeAggregation:
       allOf:
-      - $ref: '#/components/schemas/Facet'
+      - $ref: '#/components/schemas/Aggregation'
       - type: object
         properties:
           field:
@@ -411,9 +404,9 @@ components:
         required:
         - ranges
         
-    GeoFacet:
+    GroupByDistanceAggregation:
       allOf:
-      - $ref: '#/components/schemas/Facet'
+      - $ref: '#/components/schemas/Aggregation'
       - type: object
         properties:
           around:
@@ -433,8 +426,23 @@ components:
           - field
           - unit
 
-##### SEARCH REPONSE COMPONENTS #####  
-      
+    StatisticsAggregation:
+      allOf:
+      - $ref: '#/components/schemas/Aggregation'
+      - type: object
+        properties:
+          min:
+            type: boolean
+          max: 
+            type: boolean
+          sum:
+            type: boolean
+          count:
+            type: boolean
+          avg:
+            type: boolean
+
+##### SEARCH RESPONSE COMPONENTS #####
     SearchResponse:
       type: object
       properties:
@@ -447,7 +455,7 @@ components:
         facets:
           type: array
           items:
-            $ref: "#/components/schemas/FacetResponse"
+            $ref: "#/components/schemas/AggregationResponse"
 
     ResultSet:
       type: object
@@ -507,23 +515,23 @@ components:
           $ref: '#/components/schemas/FieldType'
           description: type of the field
           
-    FacetResponse:
+    AggregationResponse:
       type: object
       properties:
-        facetType:
+        type:
           type: string
       required:
-      - facetType
+      - type
       discriminator:
-        propertyName: facetType
+        propertyName: type
         mapping:
-          value: '#/components/schemas/ValueFacetResponse'
-          range: '#/components/schemas/RangeFacetResponse'
-          geo: '#/components/schemas/GeoFacetResponse'
+          value: '#/components/schemas/GroupByValueAggregationResponse'
+          range: '#/components/schemas/GroupByRangeAggregationResponse'
+          geo: '#/components/schemas/GroupByDistanceAggregationResponse'
           
-    ValueFacetResponse:
+    GroupByValueAggregationResponse:
       allOf:
-      - $ref: '#/components/schemas/FacetResponse'
+      - $ref: '#/components/schemas/AggregationResponse'
       - type: object
         properties:
           values:
@@ -537,9 +545,9 @@ components:
                   type: integer
                   format: int64
 
-    RangeFacetResponse:
+    GroupByRangeAggregationResponse:
       allOf:
-      - $ref: '#/components/schemas/FacetResponse'
+      - $ref: '#/components/schemas/AggregationResponse'
       - type: object
         properties:
           ranges:
@@ -558,9 +566,9 @@ components:
                   type: integer
                   format: int64
 
-    GeoFacetResponse:
+    GroupByDistanceAggregationResponse:
       allOf:
-      - $ref: '#/components/schemas/FacetResponse'
+      - $ref: '#/components/schemas/AggregationResponse'
       - type: object
         properties:
           around:
@@ -578,4 +586,74 @@ components:
                   type: integer
                   format: int64
           
+##### RELEVANCE COMPONENTS #####
+    Relevance:
+      type: object
+      properties:
+        priorityOfFields:
+          type: array
+          items:
+            type: string
+        promoteDocuments:
+          type: array
+          items:
+            $ref: '#/components/schemas/RankDocument'
+        demoteDocuments:
+          type: array
+          items:
+            $ref: '#/components/schemas/RankDocument'
+
+    RankDocument:
+      type: object
+      properties:
+        type:
+          type: string
+      required:
+        - type
+      discriminator:
+        propertyName: type
+        mapping:
+          byValue: '#/components/schemas/RankDocumentByValue'
+          byDate: '#/components/schemas/RankDocumentByDate'
+          byDistance: '#/components/schemas/RankDocumentByDistance'
+
+    RankDocumentByValue:
+      allOf:
+      - $ref: '#/components/schemas/RankDocument'
+      - type: object
+        properties:
+          fieldName:
+            type: string
+          value:
+            type: string
+        required:
+          - fieldName
+          - value
+
+    RankDocumentByDate:
+      allOf:
+      - $ref: '#/components/schemas/RankDocument'
+      - type: object
+        properties:
+          fieldName:
+            type: string
+          date:
+            type: string
+        required:
+          - fieldName
+          - date
+
+    RankDocumentByDistance:
+      allOf:
+      - $ref: '#/components/schemas/RankDocument'
+      - type: object
+        properties:
+          fieldName:
+            type: string
+          latLon:
+            type: string
+        required:
+          - fieldName
+          - latLon
+
 # EOF
