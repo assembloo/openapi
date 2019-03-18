@@ -238,7 +238,7 @@ components:
       - $ref: '#/components/schemas/Filter'
       - type: object
         properties:
-          around:
+          origin:
             $ref: '#/components/schemas/GeoPoint'
           distance:
             type: integer
@@ -248,7 +248,7 @@ components:
             $ref: '#/components/schemas/UnitOfLength'            
         required:
           - type
-          - around
+          - origin
           - distance
           - field
           - unit
@@ -302,10 +302,10 @@ components:
       - type: object
         description: "Sort by geographical distance from the point given as the geo center"
         properties:
-          around:
+          origin:
             $ref: '#/components/schemas/GeoPoint'
         required:
-        - around
+        - origin
         
     SortByScore:
       allOf:
@@ -341,9 +341,12 @@ components:
     Aggregation:
       type: object
       properties:
+        name:
+          type: string
         type:
           type: string
       required:
+        - name
         - type
       discriminator:
         propertyName: type
@@ -414,7 +417,7 @@ components:
       - $ref: '#/components/schemas/Aggregation'
       - type: object
         properties:
-          around:
+          origin:
             $ref: '#/components/schemas/GeoPoint'
           distances:
             type: array
@@ -428,7 +431,7 @@ components:
           unit:
             $ref: '#/components/schemas/UnitOfLength'
         required:
-          - around
+          - origin
           - distances
           - field
           - unit
@@ -589,7 +592,7 @@ components:
       - $ref: '#/components/schemas/AggregationResponse'
       - type: object
         properties:
-          around:
+          origin:
             $ref: '#/components/schemas/GeoPoint'
           distances:
             type: array
@@ -668,7 +671,7 @@ components:
         properties:
           fieldName:
             type: string
-          latLon:
+          origin:
             type: string
         required:
           - fieldName
