@@ -352,7 +352,7 @@ components:
           range: '#/components/schemas/GroupByRangeAggregation'
           geo:  '#/components/schemas/GroupByDistanceAggregation'
           statistics:  '#/components/schemas/StatisticsAggregation'
-       
+
     GroupByValueAggregationOrder:
       type: string
       enum: 
@@ -367,6 +367,8 @@ components:
       - $ref: '#/components/schemas/Aggregation'
       - type: object
         properties:
+          excludeFilter:
+            type: boolean
           field:
             type: string
           size:
@@ -384,6 +386,8 @@ components:
       - $ref: '#/components/schemas/Aggregation'
       - type: object
         properties:
+          excludeFilter:
+            type: boolean
           field:
             type: string
           ranges:
@@ -402,6 +406,7 @@ components:
               - from
               - to
         required:
+        - field
         - ranges
         
     GroupByDistanceAggregation:
@@ -416,6 +421,8 @@ components:
             description: "list of distances, eg 5, 10, 15, 20, it will return 5 buckets: 0-5, 5-10, 10-15, 15-20 and 20+"
             items:
               type: string
+          excludeFilter:
+            type: boolean
           field:
             type: string  
           unit:
@@ -431,16 +438,24 @@ components:
       - $ref: '#/components/schemas/Aggregation'
       - type: object
         properties:
-          min:
-            type: boolean
-          max: 
-            type: boolean
-          sum:
+          avg:
             type: boolean
           count:
             type: boolean
-          avg:
+          count_approximate:
             type: boolean
+          excludeFilter:
+            type: boolean
+          field:
+            type: string  
+          max: 
+            type: boolean
+          min:
+            type: boolean
+          sum:
+            type: boolean
+        required:
+          - field
 
 ##### SEARCH RESPONSE COMPONENTS #####
     SearchResponse:
@@ -452,7 +467,7 @@ components:
           description: total number of records found in the datastore
         results:
             $ref: "#/components/schemas/ResultSet"
-        facets:
+        aggregations:
           type: array
           items:
             $ref: "#/components/schemas/AggregationResponse"
@@ -518,9 +533,12 @@ components:
     AggregationResponse:
       type: object
       properties:
+        name:
+          type: string
         type:
           type: string
       required:
+      - name
       - type
       discriminator:
         propertyName: type
