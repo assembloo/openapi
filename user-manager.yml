@@ -1,9 +1,9 @@
 openapi: 3.0.1
 servers:
   - description: Assembloo production API
-    url: https://api.assembloo.com/usermanager/1.0.0
+    url: https://api.assembloo.com/usermanager/v1
 info:
-  version: "1.0.0"
+  version: "v1"
   title: User manager API
   description: Service to handle user management (authentication, users, groups)
   contact:
@@ -16,31 +16,31 @@ info:
 paths:
 
   ##### USER MANAGER #####
-  /search:
-    post:
-      summary: Search the user managers
-      tags:
-      - UserManagers
-      requestBody:
-        $ref: "#/components/requestBodies/SearchRequest"
-      responses:
-        '200':
-          $ref: '#/components/responses/SearchResponse'
-        '401':
-          $ref: '#/components/responses/UnauthorizedError'
+#  /search:
+#    post:
+#      summary: Search the user managers
+#      tags:
+#      - UserManagers
+#      requestBody:
+#        $ref: "#/components/requestBodies/SearchRequest"
+#      responses:
+#        '200':
+#          $ref: '#/components/responses/SearchResponse'
+#        '401':
+#          $ref: '#/components/responses/UnauthorizedError'
           
   /:
-    get:
-      summary: List the user managers
-      tags:
-      - UserManagers
-      parameters:
-      - "$ref": "#/components/parameters/pageParam"
-      responses:
-        '200':
-          $ref: '#/components/responses/SearchResponse'
-        '401':
-          $ref: '#/components/responses/UnauthorizedError'
+#    get:
+#      summary: List the user managers
+#      tags:
+#      - UserManagers
+#      parameters:
+#      - "$ref": "#/components/parameters/pageParam"
+#      responses:
+#        '200':
+#          $ref: '#/components/responses/SearchResponse'
+#        '401':
+#          $ref: '#/components/responses/UnauthorizedError'
     post:
       summary: Creates a new user manager
       tags:
@@ -95,24 +95,24 @@ paths:
           $ref: '#/components/responses/UnauthorizedError'
         '404':
           description: User manager not found
-    put:
-      summary: Updates a user manager by ID
-      tags:
-      - UserManagers
-      requestBody:
-        $ref: "#/components/requestBodies/UserManagerRequest"
-      responses:
-        '200':
-          description: The user manager was updated
-          content:
-            application/json:
-              schema:
-                type: string
-                description: the ID of the updated object
-        '401':
-          $ref: '#/components/responses/UnauthorizedError'
-        '404':
-          description: User manager not found
+#    put:
+#      summary: Updates a user manager by ID
+#      tags:
+#      - UserManagers
+#      requestBody:
+#        $ref: "#/components/requestBodies/UserManagerRequest"
+#      responses:
+#        '200':
+#          description: The user manager was updated
+#          content:
+#            application/json:
+#              schema:
+#                type: string
+#                description: the ID of the updated object
+#        '401':
+#          $ref: '#/components/responses/UnauthorizedError'
+#        '404':
+#          description: User manager not found
           
   ##### AUTHENTICATE #####
   /{userManagerId}/authenticate/password:
@@ -131,23 +131,23 @@ paths:
         '401':
           $ref: '#/components/responses/UnauthorizedError'
           
-#  /{userManagerId}/authenticate/check_token:
-#    parameters:
-#    - "$ref": "#/components/parameters/userManagerIdParam"
-#    post:
-#      operationId: checkToken
-#      summary: Verify the token
-#      tags:
-#      - Authenticate
-#      requestBody:
-#        $ref: '#/components/requestBodies/CheckTokenRequest'
-#      responses:
-#        '200':
-#          description: The token is valid
-#        '400':
-#          description: The token is not valid
-#        '401':
-#          $ref: '#/components/responses/UnauthorizedError'
+  /{userManagerId}/authenticate/check_token:
+    parameters:
+    - "$ref": "#/components/parameters/userManagerIdParam"
+    post:
+      operationId: checkToken
+      summary: Verify the token
+      tags:
+      - Authenticate
+      requestBody:
+        $ref: '#/components/requestBodies/CheckTokenRequest'
+      responses:
+        '200':
+          description: The token is valid
+        '400':
+          description: The token is not valid
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
   #  /authenticate/oauth/authorize:
   #    get:
   #      parameters:
@@ -304,6 +304,21 @@ paths:
   
   ##### ACCESS TOKENS #####
   
+  /{userManagerId}/users/{userId}/access_tokens/search:
+    parameters:
+    - "$ref": "#/components/parameters/userManagerIdParam"
+    - "$ref": "#/components/parameters/userIdParam"
+    post:
+      summary: Search the tokens
+      tags:
+      - Access Tokens
+      requestBody:
+        $ref: "#/components/requestBodies/SearchRequest"
+      responses:
+        '200':
+          $ref: '#/components/responses/SearchResponse'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
   /{userManagerId}/users/{userId}/access_tokens:
     parameters:
     - "$ref": "#/components/parameters/userManagerIdParam"
@@ -375,24 +390,24 @@ paths:
           $ref: '#/components/responses/UnauthorizedError'
         '404':
           description: User not found
-    put:
-      summary: Updates an access token by ID
-      tags:
-      - Access Tokens
-      requestBody:
-        $ref: "#/components/requestBodies/AccessTokenRequest"
-      responses:
-        '200':
-          description: The access token was updated
-          content:
-            application/json:
-              schema:
-                type: string
-                description: the ID of the updated object
-        '401':
-          $ref: '#/components/responses/UnauthorizedError'
-        '404':
-          description: Access token not found
+#    put:
+#      summary: Updates an access token by ID
+#      tags:
+#      - Access Tokens
+#      requestBody:
+#        $ref: "#/components/requestBodies/AccessTokenRequest"
+#      responses:
+#        '200':
+#          description: The access token was updated
+#          content:
+#            application/json:
+#              schema:
+#                type: string
+#                description: the ID of the updated object
+#        '401':
+#          $ref: '#/components/responses/UnauthorizedError'
+#        '404':
+#          description: Access token not found
   
   ##### GROUPS #####
   /{userManagerId}/groups/search:
@@ -579,13 +594,10 @@ components:
         id:
           type: string
           pattern: "^[a-z]+[a-z0-9\\-\\.]*$"
-        description:
-          type: string
       required:
-      - name
+      - id
       example:
         id: my-user-manager
-        description: description of my user manager
   
     EmailLogin:
       type: object

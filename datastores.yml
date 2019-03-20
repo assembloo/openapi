@@ -600,15 +600,18 @@ components:
           type: string
           description: name of the field
         type:
-          type: string
-          enum:
-          - binary
-          - boolean
-          - date
-          - geo_point
-          - decimal
-          - integer
-          - string
+          $ref: '#/components/schemas/FieldType'
+
+    FieldType:
+      type: string
+      enum:
+      - binary
+      - boolean
+      - date
+      - geo_point
+      - decimal
+      - integer
+      - string
   
     Record:
       type: object
