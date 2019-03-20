@@ -59,13 +59,30 @@ components:
     UnitOfLength:
       type: string
       enum:
-        - mm
-        - cm
-        - m 
-        - km
-        - in
-        - yd
-        - mi
+        - millimeter
+        - centimeter
+        - meter
+        - kilometer
+        - inch
+        - yard
+        - mile
+
+    Range:
+      type: object
+      properties:
+        from:
+          type: string
+        to:
+          type: string
+
+    NamedRange:
+      allOf:
+      - $ref: '#/components/schemas/Range'
+      - type: object
+        properties:
+          name:
+            type: string
+          description: name of the range
 
 ##### SEARCH SELECT COMPONENTS #####
     SelectExpressions:
@@ -141,14 +158,13 @@ components:
       discriminator:
         propertyName: filterType
         mapping:
-          or:           '#/components/schemas/OrFilter'
-          and:          '#/components/schemas/AndFilter'
-          not:          '#/components/schemas/NotFilter'
-          exactmatch:   '#/components/schemas/ExactMatchFilter'
-          daterange:    '#/components/schemas/DateRangeFilter'
-          numrange:     '#/components/schemas/NumberRangeFilter'
-          geo:          '#/components/schemas/GeoDistanceFilter'
-          fulltext:     '#/components/schemas/FullTextFilter'
+          or:                  '#/components/schemas/OrFilter'
+          and:                 '#/components/schemas/AndFilter'
+          not:                 '#/components/schemas/NotFilter'
+          exactmatch:          '#/components/schemas/ExactMatchFilter'
+          between:             '#/components/schemas/BetweenFilter'
+          betweendistance:     '#/components/schemas/BetweenDistanceFilter'
+          fulltext:            '#/components/schemas/FullTextFilter'
 
     OrFilter:
       allOf:
@@ -199,58 +215,29 @@ components:
             type: string
         additionalProperties: false
       
-    DateRangeFilter:
+    BetweenFilter:
       allOf:
       - $ref: '#/components/schemas/Filter'
       - type: object
-        minProperties: 1
-        maxProperties: 2
         properties:
           field:
             type: string
-          from:
-            type: string
-            format: date
-          to:
-            type: string
-            format: date
-        description: "a filter by date range, to and from bounds are included"
-        additionalProperties: false
-        
-    NumberRangeFilter:
-      allOf:
-      - $ref: '#/components/schemas/Filter'
-      - type: object
-        minProperties: 1
-        maxProperties: 2
-        properties:
-          field:
-            type: string
-          from:
-            type: number
-          to:
-            type: number
-        description: "a filter by number range, to and from bounds are included"
+          range:
+            $ref: '#/components/schemas/Range'
+        description: "a filter between two bounds, to and from bounds are included"
         additionalProperties: false
       
-    GeoDistanceFilter:
+    BetweenDistanceFilter:
       allOf:
-      - $ref: '#/components/schemas/Filter'
+      - $ref: '#/components/schemas/BetweenFilter'
       - type: object
         properties:
           origin:
             $ref: '#/components/schemas/GeoPoint'
-          distance:
-            type: integer
-          field:
-            type: string  
           unit:
             $ref: '#/components/schemas/UnitOfLength'            
         required:
-          - type
           - origin
-          - distance
-          - field
           - unit
         
     FullTextFilter:
@@ -282,7 +269,7 @@ components:
         propertyName: type
         mapping:
           field:  '#/components/schemas/SortByField'
-          geo:    '#/components/schemas/SortByGeoField'
+          geo:    '#/components/schemas/SortByDistance'
           score:  '#/components/schemas/SortByScore'
 
     SortByField:
@@ -296,7 +283,7 @@ components:
         required:
         - field
         
-    SortByGeoField:
+    SortByDistance:
       allOf:
       - $ref: '#/components/schemas/SortByField'
       - type: object
@@ -355,6 +342,7 @@ components:
           range: '#/components/schemas/GroupByRangeAggregation'
           geo:  '#/components/schemas/GroupByDistanceAggregation'
           statistics:  '#/components/schemas/StatisticsAggregation'
+          facet:  '#/components/schemas/FacetFilterAggregation'
 
     GroupByValueAggregationOrder:
       type: string
@@ -364,14 +352,22 @@ components:
         - count_desc
       description: "alphanum_asc: sorted from a to z, alphanum_desc: sorted from z to a"
       default: count
-   
+
+    FacetFilterAggregation:
+      allOf:
+      - $ref: '#/components/schemas/Aggregation'
+      - type: object
+        properties:
+          aggregations:
+            type: array
+            items:
+              $ref: '#/components/schemas/Aggregation'
+
     GroupByValueAggregation:
       allOf:
       - $ref: '#/components/schemas/Aggregation'
       - type: object
         properties:
-          excludeFilter:
-            type: boolean
           field:
             type: string
           size:
@@ -389,51 +385,29 @@ components:
       - $ref: '#/components/schemas/Aggregation'
       - type: object
         properties:
-          excludeFilter:
-            type: boolean
           field:
             type: string
           ranges:
             type: array
             items:
-              type: object
-              properties:
-                from:
-                  type: string
-                to:
-                  type: string
-                key:
-                  type: string
-                  description: optional name of the range
-              required:
-              - from
-              - to
+              $ref: '#/components/schemas/NamedRange'
         required:
         - field
         - ranges
         
     GroupByDistanceAggregation:
       allOf:
-      - $ref: '#/components/schemas/Aggregation'
+      - $ref: '#/components/schemas/GroupByRangeAggregation'
       - type: object
         properties:
           origin:
             $ref: '#/components/schemas/GeoPoint'
-          distances:
-            type: array
-            description: "list of distances, eg 5, 10, 15, 20, it will return 5 buckets: 0-5, 5-10, 10-15, 15-20 and 20+"
-            items:
-              type: string
-          excludeFilter:
-            type: boolean
-          field:
-            type: string  
           unit:
             $ref: '#/components/schemas/UnitOfLength'
         required:
-          - origin
-          - distances
           - field
+          - origin
+          - ranges
           - unit
 
     StatisticsAggregation:
@@ -606,7 +580,28 @@ components:
                 count:
                   type: integer
                   format: int64
-          
+
+    StatisticsAggregationResponse:
+      allOf:
+      - $ref: '#/components/schemas/AggregationResponse'
+      - type: object
+        properties:
+          average:
+            type: number
+            format: double
+          count:
+            type: integer
+            format: int64
+          max:
+            type: number
+            format: double
+          min:
+            type: number
+            format: double
+          sum:
+            type: number
+            format: double
+
 ##### RELEVANCE COMPONENTS #####
     Relevance:
       type: object
