@@ -683,14 +683,17 @@ components:
       required:
       - new_password
       
-    UserIdGroupId:
+    GroupMembership:
       type: object
       properties:
+        id:
+          type: string
         groupId:
           type: string
         userId:
           type: string
       required:
+      - id
       - groupId
       - userId
 
@@ -817,7 +820,7 @@ components:
       content:
         application/json:
           schema:
-            $ref: "#/components/schemas/UserIdGroupId"
+            $ref: "#/components/schemas/GroupMembership"
             
   responses:
     UnauthorizedError:
