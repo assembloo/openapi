@@ -148,6 +148,20 @@ paths:
           description: The token is not valid
         '401':
           $ref: '#/components/responses/UnauthorizedError'
+
+  /{userManagerId}/authenticate/sessions:
+    parameters:
+    - "$ref": "#/components/parameters/userManagerIdParam"
+    post:
+      operationId: viewSessions
+      summary: View sessions currently active
+      tags:
+      - Authenticate
+      responses:
+        '200':
+          $ref: '#/components/responses/SessionsResponse'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
   #  /authenticate/oauth/authorize:
   #    get:
   #      parameters:
@@ -714,6 +728,14 @@ components:
       - email
       - id
       - token
+
+    SessionsResponse:     
+      type: object
+      properties:
+        sessions:
+          type: array
+          items:
+            type: string
       
   parameters:
     pageParam:
@@ -839,6 +861,13 @@ components:
         application/json:
           schema:
             $ref: "https://raw.githubusercontent.com/assembloo/openapi/1.0.0/repository-search.yml#/components/schemas/SearchResponse"
+
+    SessionsResponse:
+      description: The sessions response
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/SessionsResponse"
   
 tags:
   - name: UserManagers
