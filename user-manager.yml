@@ -152,7 +152,7 @@ paths:
   /{userManagerId}/authenticate/sessions:
     parameters:
     - "$ref": "#/components/parameters/userManagerIdParam"
-    post:
+    get:
       operationId: viewSessions
       summary: View sessions currently active
       tags:
@@ -313,6 +313,20 @@ paths:
       responses:
         '200':
           description: The password was set
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+  /{userManagerId}/users/{userId}/groupIds:
+    parameters:
+    - "$ref": "#/components/parameters/userManagerIdParam"
+    - "$ref": "#/components/parameters/userIdParam"
+    get:
+      operationId: getGroupIds
+      summary: Get the user's group ids
+      tags:
+      - Users
+      responses:
+        '200':
+          $ref: '#/components/responses/GroupIdsResponse'
         '401':
           $ref: '#/components/responses/UnauthorizedError'
   
@@ -736,6 +750,14 @@ components:
           type: array
           items:
             type: string
+
+    GroupIdsResponse:
+      type: object
+      properties:
+        groupIds:
+          type: array
+          items:
+            type: string
       
   parameters:
     pageParam:
@@ -868,6 +890,13 @@ components:
         application/json:
           schema:
             $ref: "#/components/schemas/SessionsResponse"
+
+    GroupIdsResponse:
+      description: The user's group ids response
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/GroupIdsResponse"
   
 tags:
   - name: UserManagers
