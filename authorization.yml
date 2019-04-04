@@ -2,7 +2,7 @@ openapi: 3.0.1
 info:
   version: "v1"
   title: Authorization (sub) API
-  description: Sub API to handle authorization on a service
+  description: Sub API to handle authorization on a service.
   contact:
     email: support@assembloo.com
   license:
@@ -33,7 +33,9 @@ paths:
 
 ##### ROLE MEMBERSHIP #####
 
-  /memberships/search:
+  /:serviceId/memberships/search:
+    parameters:
+    - "$ref": "#/components/parameters/serviceIdParam"
     post:
       summary: Search the memberships
       tags:
@@ -45,7 +47,9 @@ paths:
           $ref: '#/components/responses/SearchResponse'
         '401':
           $ref: '#/components/responses/UnauthorizedError'
-  /memberships:
+  /:serviceId/memberships:
+    parameters:
+    - "$ref": "#/components/parameters/serviceIdParam"
     get:
       summary: List the memberships
       tags:
@@ -77,8 +81,9 @@ paths:
           $ref: '#/components/responses/UnauthorizedError'
         '422':
           description: Invalid membership data
-  /memberships/{membershipId}:
+  /:serviceId/memberships/{membershipId}:
     parameters:
+    - "$ref": "#/components/parameters/serviceIdParam"
     - "$ref": "#/components/parameters/membershipIdParam"
     get:
       summary: Returns a membership by ID
@@ -111,7 +116,9 @@ paths:
           $ref: '#/components/responses/UnauthorizedError'
         '404':
           description: Membership not found
-  /memberships/has_permission:
+  /:serviceId/memberships/has_permission:
+    parameters:
+    - "$ref": "#/components/parameters/serviceIdParam"
     get:
       operationId: hasPermission
       summary: Find out if we have a certain permission
@@ -140,12 +147,12 @@ components:
       properties:
         id:
           type: string
-        owner_id:
+        ownerId:
           type: string
           description: e.g. a groupId
-        object_id:
+        objectId:
           type: string
-        role_id:
+        roleId:
           type: string
           description: the role of the owner on the object, gives a list of permissions on the object to the owner
       required:
@@ -156,7 +163,7 @@ components:
         id: 63312df2-dabd-46c4-a090-b5e628266111
         ownerId: 97292dac-b0ab-4fca-970f-d0f9578e47db
         objectId: 042f4ef2-d798-4e94-84b7-41a76275d878
-        role_id: b771bf49-469c-4116-a2bb-26624eb9c40c
+        roleId: analyst
         
   parameters:
     pageParam:
@@ -174,6 +181,13 @@ components:
         type: string
       required: true
       description: The role membership id
+    serviceIdParam:
+      in: path
+      name: serviceId
+      schema:
+        type: string
+      required: true
+      description: The id of the service the membership sub-service is mounted on
 
   requestBodies:
     SearchRequest:
