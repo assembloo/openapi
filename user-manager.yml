@@ -59,6 +59,8 @@ paths:
           description: Bad request
         '401':
           $ref: '#/components/responses/UnauthorizedError'
+        '409':
+          description: Conflict
         '422':
           description: Invalid user manager data
   /{userManagerId}:
