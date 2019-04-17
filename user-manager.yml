@@ -600,7 +600,8 @@ paths:
     get:
       operationId: getUserGroupIds
       summary: Get the user's group ids
-      - Users
+      tags:
+      - Groups
       responses:
         '200':
           $ref: '#/components/responses/GroupIdsResponse'
