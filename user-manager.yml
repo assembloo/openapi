@@ -317,20 +317,6 @@ paths:
           description: The password was set
         '401':
           $ref: '#/components/responses/UnauthorizedError'
-  /{userManagerId}/users/{userId}/groupIds:
-    parameters:
-    - "$ref": "#/components/parameters/userManagerIdParam"
-    - "$ref": "#/components/parameters/userIdParam"
-    get:
-      operationId: getGroupIds
-      summary: Get the user's group ids
-      tags:
-      - Users
-      responses:
-        '200':
-          $ref: '#/components/responses/GroupIdsResponse'
-        '401':
-          $ref: '#/components/responses/UnauthorizedError'
   
   ##### ACCESS TOKENS #####
   
@@ -607,7 +593,19 @@ paths:
           description: Bad request
         '401':
           $ref: '#/components/responses/UnauthorizedError'
-          
+  /{userManagerId}/groups/users/{userId}:
+    parameters:
+    - "$ref": "#/components/parameters/userManagerIdParam"
+    - "$ref": "#/components/parameters/userIdParam"
+    get:
+      operationId: getUserGroupIds
+      summary: Get the user's group ids
+      - Users
+      responses:
+        '200':
+          $ref: '#/components/responses/GroupIdsResponse'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
 
 components:
 
