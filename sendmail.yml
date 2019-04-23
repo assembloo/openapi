@@ -1,0 +1,270 @@
+openapi: 3.0.1
+info:
+  version: "v1"
+  title: SendMail API
+  description: An API to send emails
+  contact:
+    email: support@assembloo.com
+  license:
+    name: Apache 2.0
+    url: 'http://www.apache.org/licenses/LICENSE-2.0.html'
+    
+paths:
+##### SMTP SETTINGS #####
+  /:serviceId/send:
+    parameters:
+    - "$ref": "#/components/parameters/serviceIdParam"
+    post:
+      operationId: send
+      summary: Send a mail
+      tags:
+      - SmtpSettings
+      requestBody:
+        $ref: "#/components/requestBodies/SendMailRequest"
+      responses:
+        '200':
+          $ref: '#/components/responses/SendMailResponse'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+
+##### SMTP SETTINGS #####
+  /:serviceId/smtpsettings/search:
+    parameters:
+    - "$ref": "#/components/parameters/serviceIdParam"
+    post:
+      summary: Search smtp settings
+      tags:
+      - SmtpSettings
+      requestBody:
+        $ref: "#/components/requestBodies/SearchRequest"
+      responses:
+        '200':
+          $ref: '#/components/responses/SearchResponse'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+  /:serviceId/smtp-settings:
+    parameters:
+    - "$ref": "#/components/parameters/serviceIdParam"
+    get:
+      summary: List smtp settings
+      tags:
+      - SmtpSettings
+      parameters:
+      - "$ref": "#/components/parameters/pageParam"
+      responses:
+        '200':
+          $ref: '#/components/responses/SearchResponse'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+    post:
+      summary: Create a smtp setting
+      tags:
+      - SmtpSettings
+      requestBody:
+        $ref: "#/components/requestBodies/SmtpSettingsRequest"
+      responses:
+        '200':
+          description: SmtpSettings successfully created
+          content:
+            application/json:
+              schema:
+                type: string
+                description: the ID of the created object
+        '400':
+          description: Bad request
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '422':
+          description: Invalid data
+  /:serviceId/smtp-settings/{smtpSettingsId}:
+    parameters:
+    - "$ref": "#/components/parameters/serviceIdParam"
+    - "$ref": "#/components/parameters/smtpSettingsIdParam"
+    get:
+      summary: Return a smtp setting by ID
+      tags:
+      - SmtpSettings
+      responses:
+        '200':
+          description: A smtp setting
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SmtpSettings"
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '404':
+          description: SmtpSettings not found
+
+    put:
+      summary: Updates a smtp settings by ID
+      tags:
+      - SmtpSettings
+      requestBody:
+        $ref: "#/components/requestBodies/SmtpSettingsRequest"
+      responses:
+        '200':
+          description: The smtp settings was updated
+          content:
+            application/json:
+              schema:
+                type: string
+                description: the ID of the updated object
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '404':
+          description: Smtp settings not found
+
+    delete:
+      summary: Deletes a smtp settings by ID
+      tags:
+      - SmtpSettings
+      responses:
+        '200':
+          description: The smtp settings was deleted
+          content:
+            application/json:
+              schema:
+                type: string
+                description: the ID of the deleted object
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '404':
+          description: SmtpSettings not found
+  
+components:
+  schemas:
+    SmtpSettings:
+      type: object
+      description: describes STMP settings
+      properties:
+        id:
+          type: string
+        hostName:
+          type: string
+          description: the name of the smtp server
+        portNumber:
+          type: integer
+          format: int32
+          description: the port of the smtp server
+        security: 
+          type: string
+          enum: [NONE, STARTTLS, SSL_TLS]
+          description: the type of security
+        authentication: 
+          type: string
+          enum: [NONE, NORMAL_PASSWORD, ENCRYPTED_PASSWORD, KERBEROS, NTLM, OAUTH2]
+          description: the type of authentication
+      required:
+      - hostName
+      - portNumber
+      - security
+      - authentication
+
+    SendMailRequest:
+      type: object
+      description: describes the mail to send
+      properties:
+        smtpSettingsId:
+          type: string
+        subject:
+          type: string
+          description: the subject of the mail
+        body:
+          type: string
+          description: the body of the mail
+        to:
+          type: array
+          description: a list of email addresses
+          items:
+            type: string
+        cc:
+          type: array
+          description: a list of email addresses
+          items:
+            type: string
+            description: the subject of the mail
+        bcc:
+          type: array
+          description: a list of email addresses
+          items:
+            type: string
+            description: the subject of the mail
+        attachments:
+          type: array
+          description: a list of attachment
+          items:
+            type: string
+            description: a Mime base64 encoded string
+
+      required:
+      - subject
+      - body
+      - to
+
+  parameters:
+    pageParam:
+      name: page
+      in: query
+      description: Page number
+      schema:
+        type: integer
+        minimum: 1
+        default: 1
+    smtpSettingsIdParam:
+      in: path
+      name: smtpSettingsId
+      schema:
+        type: string
+      required: true
+      description: The smtpSettingsId id
+    serviceIdParam:
+      in: path
+      name: serviceId
+      schema:
+        type: string
+      required: true
+      description: The id of the service the smtp sub-service is mounted on
+
+  requestBodies:
+    SearchRequest:
+      description: The structure to describe the search wanted and what to return
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: "https://raw.githubusercontent.com/assembloo/openapi/1.0.0/repository-search.yml#/components/schemas/SearchRequest"
+
+    SendMailRequest:
+      description: The structure to describe the search wanted and what to return
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/SendMailRequest"
+
+    SmtpSettingsRequest:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/SmtpSettings"
+    
+  responses:
+    UnauthorizedError:
+      description: Access token is missing or invalid
+      
+    SearchResponse:
+      description: A search response of the given object
+      content:
+        application/json:
+          schema:
+            $ref: "https://raw.githubusercontent.com/assembloo/openapi/1.0.0/repository-search.yml#/components/schemas/SearchResponse"
+  
+tags:
+  - name: SmtpSettings
+
+security:
+  - bearerAuth: []
+  
+# EOF
