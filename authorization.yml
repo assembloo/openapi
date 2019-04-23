@@ -33,7 +33,7 @@ paths:
 
 ##### ROLE MEMBERSHIP #####
 
-  /:serviceId/memberships/search:
+  /{serviceId}/memberships/search:
     parameters:
     - "$ref": "#/components/parameters/serviceIdParam"
     post:
@@ -47,7 +47,7 @@ paths:
           $ref: '#/components/responses/SearchResponse'
         '401':
           $ref: '#/components/responses/UnauthorizedError'
-  /:serviceId/memberships:
+  /{serviceId}/memberships:
     parameters:
     - "$ref": "#/components/parameters/serviceIdParam"
     get:
@@ -81,7 +81,7 @@ paths:
           $ref: '#/components/responses/UnauthorizedError'
         '422':
           description: Invalid membership data
-  /:serviceId/memberships/{membershipId}:
+  /{serviceId}/memberships/{membershipId}:
     parameters:
     - "$ref": "#/components/parameters/serviceIdParam"
     - "$ref": "#/components/parameters/membershipIdParam"
@@ -116,7 +116,7 @@ paths:
           $ref: '#/components/responses/UnauthorizedError'
         '404':
           description: Membership not found
-  /:serviceId/memberships/has_permission:
+  /{serviceId}/memberships/has_permission:
     parameters:
     - "$ref": "#/components/parameters/serviceIdParam"
     get:
