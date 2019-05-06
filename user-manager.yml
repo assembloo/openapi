@@ -1,7 +1,7 @@
 openapi: 3.0.1
 servers:
   - description: Assembloo production API
-    url: https://api.assembloo.com/usermanager/v1
+    url: https://usermanagers.assembloo.com
 info:
   version: "v1"
   title: User manager API

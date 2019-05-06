@@ -1,7 +1,7 @@
 openapi: 3.0.1
 servers:
   - description: Assembloo production API
-    url: https://api.assembloo.com/datastores/v1
+    url: https://datastores.assembloo.com
 info:
   description: Assembloo Public API for datastores
   version: "v1"
