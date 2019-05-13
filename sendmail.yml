@@ -1,4 +1,7 @@
 openapi: 3.0.1
+servers:
+  - description: Assembloo production API
+    url: https://sendmail.assembloo.com
 info:
   version: "v1"
   title: SendMail API
@@ -10,13 +13,72 @@ info:
     url: 'http://www.apache.org/licenses/LICENSE-2.0.html'
     
 paths:
+##### SERVICE #####
+  /:
+    post:
+      summary: Creates an email service
+      tags:
+      - SendMail
+      requestBody:
+        $ref: "#/components/requestBodies/EmailServiceRequest"
+      responses:
+        '200':
+          description: Email service successfully created
+          content:
+            application/json:
+              schema:
+                type: string
+                description: the ID of the created object
+        '400':
+          description: Bad request
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '409':
+          description: Conflict
+        '422':
+          description: Invalid email service data
+  /{serviceId}:
+    parameters:
+    - "$ref": "#/components/parameters/serviceIdParam"
+    get:
+      summary: Returns an email service by ID
+      tags:
+      - SendMail
+      responses:
+        '200':
+          description: An email service
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/EmailService"
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '404':
+          description: Email service not found
+    delete:
+      summary: Deletes an email service by ID
+      tags:
+      - SendMail
+      responses:
+        '200':
+          description: The email service was deleted
+          content:
+            application/json:
+              schema:
+                type: string
+                description: the ID of the deleted object
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '404':
+          description: Email service not found
+
 ##### SEND #####
   /{serviceId}/send:
     parameters:
     - "$ref": "#/components/parameters/serviceIdParam"
     post:
       summary: Send a mail
-      operationId: tta
+      operationId: send_mail
       tags:
       - SendMail
       requestBody:
@@ -34,13 +96,17 @@ paths:
     parameters:
     - "$ref": "#/components/parameters/serviceIdParam"
     get:
-      operationId: tt
+      operationId: get_smtp_settings
       summary: Return the smtp settings
       tags:
       - SendMail
       responses:
         '200':
           description: The smtp settings
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SmtpSettings"
         '401':
           $ref: '#/components/responses/UnauthorizedError'
         '500':
@@ -48,7 +114,7 @@ paths:
 
     put:
       summary: Updates the smtp settings
-      operationId: ttaW
+      operationId: update_smtp_settings
       tags:
       - SendMail
       requestBody:
@@ -56,6 +122,11 @@ paths:
       responses:
         '200':
           description: The smtp settings was updated
+          content:
+            application/json:
+              schema:
+                type: string
+                description: the ID of the updated object
         '401':
           $ref: '#/components/responses/UnauthorizedError'
         '500':
@@ -63,6 +134,17 @@ paths:
 
 components:
   schemas:
+    EmailService:
+      type: object
+      properties:
+        id:
+          type: string
+          pattern: "^[a-z]+[a-z0-9\\-\\.]*$"
+      required:
+      - id
+      example:
+        id: my-email-service
+
     SmtpSettings:
       type: object
       description: describes STMP settings
@@ -82,6 +164,12 @@ components:
         authentication: 
           $ref: '#/components/schemas/Authentication'
           description: the type of authentication
+        username:
+          type: string
+          description: the username (if applicable)
+        password:
+          type: string
+          description: password needed to connect (if applicable)
       required:
       - hostName
       - portNumber
@@ -134,6 +222,9 @@ components:
           items:
             type: string
             description: the subject of the mail
+        reply-to:
+          type: string
+          description: the reply to address
         attachments:
           type: array
           description: a list of attachment
@@ -156,6 +247,14 @@ components:
       description: The id of the service the smtp sub-service is mounted on
 
   requestBodies:
+
+    EmailServiceRequest:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/EmailService'
+
     SendMailRequest:
       description: The structure to describe the search wanted and what to return
       required: true
