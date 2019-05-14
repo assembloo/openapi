@@ -118,7 +118,7 @@ paths:
     parameters:
     - "$ref": "#/components/parameters/datastoreIdParam"
     post:
-      summary: Search the tables of the engine {engineId}
+      summary: Search the tables of the datastore {datastoreId}
       requestBody:
         $ref: "#/components/requestBodies/SearchRequest"
       tags:
@@ -132,7 +132,7 @@ paths:
     parameters:
     - "$ref": "#/components/parameters/datastoreIdParam"
     get:
-      summary: List the tables of the engine {engineId}
+      summary: List the tables of the datastore {datastoreId}
       parameters:
       - "$ref": "#/components/parameters/pageParam"
       tags:
@@ -143,7 +143,7 @@ paths:
         '401':
           $ref: '#/components/responses/UnauthorizedError'
     post:
-      summary: Create a new table for engine {engineId}
+      summary: Create a new table for datastore {datastoreId}
       tags:
       - Tables
       requestBody:
