@@ -1,6 +1,6 @@
 openapi: 3.0.1
 servers:
- - description: Assembloo test1 API
+  - description: Assembloo test1 API
     url: http://sd-132400.dedibox.fr:8001/v1/mailers
   - description: Assembloo production API
     url: https://mailers.assembloo.com
