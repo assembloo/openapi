@@ -227,15 +227,26 @@ components:
           description: the reply to address
         attachments:
           type: array
-          description: a list of attachment
+          description: a list of attachments
           items:
-            type: string
-            description: a Mime base64 encoded string
-
+            $ref: '#/components/schemas/Attachment'
       required:
       - subject
       - body
       - to
+
+    Attachment:
+      type: object
+      description: A mail attachment
+      properties:
+        name:
+          type: string
+        data:
+          type: string
+          description: a Mime base64 encoded string
+      required:
+      - name
+      - data
 
   parameters:
     serviceIdParam:
