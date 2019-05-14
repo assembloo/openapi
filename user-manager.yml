@@ -1,5 +1,7 @@
 openapi: 3.0.1
 servers:
+  - description: Assembloo test1 API
+    url: http://sd-132400.dedibox.fr:8001/v1/usermanagers
   - description: Assembloo production API
     url: https://usermanagers.assembloo.com
 info:
