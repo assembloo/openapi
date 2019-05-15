@@ -652,8 +652,8 @@ components:
       description: Page number
       schema:
         type: integer
-        minimum: 1
-        default: 1
+        minimum: 0
+        default: 0
     synonymSetIdParam:
       in: path
       name: synonymSetId
