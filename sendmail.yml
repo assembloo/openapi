@@ -142,6 +142,7 @@ components:
             description: a Mime base64 encoded string
 
       required:
+      - smtpSettingsId
       - subject
       - body
       - to
