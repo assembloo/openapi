@@ -17,32 +17,7 @@ info:
     
 paths:
 
-  ##### USER MANAGER #####
-#  /search:
-#    post:
-#      summary: Search the user managers
-#      tags:
-#      - UserManagers
-#      requestBody:
-#        $ref: "#/components/requestBodies/SearchRequest"
-#      responses:
-#        '200':
-#          $ref: '#/components/responses/SearchResponse'
-#        '401':
-#          $ref: '#/components/responses/UnauthorizedError'
-          
   /:
-#    get:
-#      summary: List the user managers
-#      tags:
-#      - UserManagers
-#      parameters:
-#      - "$ref": "#/components/parameters/pageParam"
-#      responses:
-#        '200':
-#          $ref: '#/components/responses/SearchResponse'
-#        '401':
-#          $ref: '#/components/responses/UnauthorizedError'
     post:
       summary: Creates a new user manager
       tags:
@@ -99,25 +74,6 @@ paths:
           $ref: '#/components/responses/UnauthorizedError'
         '404':
           description: User manager not found
-#    put:
-#      summary: Updates a user manager by ID
-#      tags:
-#      - UserManagers
-#      requestBody:
-#        $ref: "#/components/requestBodies/UserManagerRequest"
-#      responses:
-#        '200':
-#          description: The user manager was updated
-#          content:
-#            application/json:
-#              schema:
-#                type: string
-#                description: the ID of the updated object
-#        '401':
-#          $ref: '#/components/responses/UnauthorizedError'
-#        '404':
-#          description: User manager not found
-          
   ##### AUTHENTICATE #####
   /{userManagerId}/authenticate/password:
     parameters:
@@ -135,52 +91,84 @@ paths:
         '401':
           $ref: '#/components/responses/UnauthorizedError'
 
-  /{userManagerId}/authenticate/sessions:
+  ##### SESSIONS #####
+  /{userManagerId}/sessions:
     parameters:
     - "$ref": "#/components/parameters/userManagerIdParam"
-    get:
-      operationId: viewSessions
-      summary: View sessions currently active
+    post:
+      summary: Creates a new session
       tags:
-      - Authenticate
+      - Sessions
+      requestBody:
+        $ref: "#/components/requestBodies/SessionRequest"
       responses:
         '200':
-          $ref: '#/components/responses/SessionsResponse'
+          description: Session successfully created
+          content:
+            application/json:
+              schema:
+                type: string
+                description: the ID of the created object
+        '400':
+          description: Bad request
         '401':
           $ref: '#/components/responses/UnauthorizedError'
-  #  /authenticate/oauth/authorize:
-  #    get:
-  #      parameters:
-  #      - in: path
-  #        name: state
-  #        schema:
-  #          type: string
-  #        required: true
-  #        description: State that is passed back to you when the user is redirected back to your application
-  #      - in: path
-  #        name: scope
-  #        schema:
-  #          type: string
-  #          enum:
-  #          - email
-  #          - profile
-  #        required: true
-  #        description: The permissions that the token/code will grant.
-  #      - in: path
-  #        name: response_type
-  #        schema:
-  #          type: string
-  #          enum:
-  #          - code
-  #          - token
-  #        required: true
-  #        description: a code is used to implemented server side flow, a token is used for Single Page Apps
-  #      - in: path
-  #        name: client_id
-  #        schema:
-  #          type: string
-  #        required: true
-  #        description: The permissions that the token/code will grant.
+        '422':
+          description: Invalid session data
+
+  /{userManagerId}/sessions/{sessionId}:
+    parameters:
+    - "$ref": "#/components/parameters/userManagerIdParam"
+    - "$ref": "#/components/parameters/sessionIdParam"
+    get:
+      summary: Returns a session by ID
+      tags:
+      - Sessions
+      responses:
+        '200':
+          description: A session
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Session"
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '404':
+          description: Session not found
+    delete:
+      summary: Deletes a session by ID
+      tags:
+      - Sessions
+      responses:
+        '200':
+          description: The session was deleted
+          content:
+            application/json:
+              schema:
+                type: string
+                description: the ID of the deleted object
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '404':
+          description: Session not found
+    put:
+      summary: Updates a session by ID
+      tags:
+      - Sessions
+      requestBody:
+        $ref: "#/components/requestBodies/SessionRequest"
+      responses:
+        '200':
+          description: The session was updated
+          content:
+            application/json:
+              schema:
+                type: string
+                description: the ID of the updated object
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '404':
+          description: Session not found
 
   ##### USERS #####
   /{userManagerId}/users/search:
@@ -622,7 +610,32 @@ components:
       required:
       - email
       - password
-    
+
+    Session:
+      type: object
+      properties:
+        id:
+          type: string
+        userId:
+          type: string
+        timeout:
+          type: integer
+          minimum: 0
+        endDate:
+          type: string
+          format: date-time
+        lastAccess:
+          type: string
+          format: date-time
+        data:
+          type: string
+          format: byte
+      required:
+      - id
+      example:
+        id: 63312df2-dabd-46c4-a090-b5e628266329
+        email: johndoe@example.com
+
     Token:
       type: object
       properties:
@@ -753,7 +766,15 @@ components:
         type: integer
         minimum: 0
         default: 0
-        
+
+    sessionIdParam:
+      in: path
+      name: sessionId
+      schema:
+        type: string
+      required: true
+      description: The session id
+
     userManagerIdParam:
       in: path
       name: userManagerId
@@ -808,14 +829,21 @@ components:
         application/json:
           schema:
             $ref: '#/components/schemas/EmailLogin'
-            
+
+    SessionRequest:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Session"
+
     UserRequest:
       required: true
       content:
         application/json:
           schema:
             $ref: "#/components/schemas/User"
-            
+
     UserPasswordReq:
       required: true
       content:
@@ -882,6 +910,7 @@ tags:
   - name: Users
   - name: Access Tokens
   - name: Groups
+  - name: Sessions
   
 security:
   - bearerAuth: []
