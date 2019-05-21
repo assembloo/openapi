@@ -132,24 +132,6 @@ paths:
           $ref: '#/components/responses/LoginResponse'
         '401':
           $ref: '#/components/responses/UnauthorizedError'
-          
-  /{userManagerId}/authenticate/check_token:
-    parameters:
-    - "$ref": "#/components/parameters/userManagerIdParam"
-    post:
-      operationId: checkToken
-      summary: Verify the token
-      tags:
-      - Authenticate
-      requestBody:
-        $ref: '#/components/requestBodies/CheckTokenRequest'
-      responses:
-        '200':
-          description: The token is valid
-        '400':
-          description: The token is not valid
-        '401':
-          $ref: '#/components/responses/UnauthorizedError'
 
   /{userManagerId}/authenticate/sessions:
     parameters:
@@ -824,13 +806,6 @@ components:
         application/json:
           schema:
             $ref: '#/components/schemas/EmailLogin'
-            
-    CheckTokenRequest:
-      required: true
-      content:
-        application/json:
-          schema:
-            $ref: "#/components/schemas/Token"
             
     UserRequest:
       required: true
