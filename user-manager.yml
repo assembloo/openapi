@@ -1,7 +1,9 @@
 openapi: 3.0.1
 servers:
+  - description: Assembloo test1 API
+    url: http://sd-132400.dedibox.fr:8001/v1/usermanagers
   - description: Assembloo production API
-    url: https://api.assembloo.com/usermanager/v1
+    url: https://usermanagers.assembloo.com
 info:
   version: "v1"
   title: User manager API
@@ -749,8 +751,8 @@ components:
       description: Page number
       schema:
         type: integer
-        minimum: 1
-        default: 1
+        minimum: 0
+        default: 0
         
     userManagerIdParam:
       in: path

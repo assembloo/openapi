@@ -37,6 +37,7 @@ components:
           type: integer
           description: zero-based number of the current page
           default: 0
+          minimum: 0
         pageSize:
           type: integer
           description: number of items per page
