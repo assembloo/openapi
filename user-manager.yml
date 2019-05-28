@@ -291,37 +291,9 @@ paths:
           $ref: '#/components/responses/UnauthorizedError'
   
   ##### ACCESS TOKENS #####
-  
-  /{userManagerId}/users/{userId}/access_tokens/search:
+  /{userManagerId}/access_tokens:
     parameters:
     - "$ref": "#/components/parameters/userManagerIdParam"
-    - "$ref": "#/components/parameters/userIdParam"
-    post:
-      summary: Search the tokens
-      tags:
-      - Access Tokens
-      requestBody:
-        $ref: "#/components/requestBodies/SearchRequest"
-      responses:
-        '200':
-          $ref: '#/components/responses/SearchResponse'
-        '401':
-          $ref: '#/components/responses/UnauthorizedError'
-  /{userManagerId}/users/{userId}/access_tokens:
-    parameters:
-    - "$ref": "#/components/parameters/userManagerIdParam"
-    - "$ref": "#/components/parameters/userIdParam"
-    get:
-      summary: List the access tokens
-      tags:
-      - Access Tokens
-      parameters:
-      - "$ref": "#/components/parameters/pageParam"
-      responses:
-        '200':
-          $ref: '#/components/responses/SearchResponse'
-        '401':
-          $ref: '#/components/responses/UnauthorizedError'
     post:
       summary: Creates a new access token
       tags:
@@ -342,10 +314,9 @@ paths:
           $ref: '#/components/responses/UnauthorizedError'
         '422':
           description: Invalid access token data
-  /{userManagerId}/users/{userId}/access_tokens/{accessTokenId}:
+  /{userManagerId}/access_tokens/{accessTokenId}:
     parameters:
     - "$ref": "#/components/parameters/userManagerIdParam"
-    - "$ref": "#/components/parameters/userIdParam"
     - "$ref": "#/components/parameters/accessTokenIdParam"
     get:
       summary: Returns an access token by ID
@@ -378,25 +349,7 @@ paths:
           $ref: '#/components/responses/UnauthorizedError'
         '404':
           description: User not found
-#    put:
-#      summary: Updates an access token by ID
-#      tags:
-#      - Access Tokens
-#      requestBody:
-#        $ref: "#/components/requestBodies/AccessTokenRequest"
-#      responses:
-#        '200':
-#          description: The access token was updated
-#          content:
-#            application/json:
-#              schema:
-#                type: string
-#                description: the ID of the updated object
-#        '401':
-#          $ref: '#/components/responses/UnauthorizedError'
-#        '404':
-#          description: Access token not found
-  
+
   ##### GROUPS #####
   /{userManagerId}/groups/search:
     parameters:
@@ -627,11 +580,10 @@ components:
         lastAccess:
           type: string
           format: date-time
-        data:
-          type: string
-          format: byte
       required:
       - id
+      - userId
+      - timeout
       example:
         id: 63312df2-dabd-46c4-a090-b5e628266329
         email: johndoe@example.com
@@ -671,6 +623,8 @@ components:
       properties:
         id:
           type: string
+        userId:
+          type: string
         name:
           type: string
         startDate:
@@ -679,6 +633,7 @@ components:
           type: string
       required:
       - id
+      - userId
       - name
       example:
         id: 63312df2-dabd-46c4-a090-b5e628266329
