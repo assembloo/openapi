@@ -1,3 +1,5 @@
+
+
 openapi: 3.0.1
 servers:
   - description: Assembloo test1 API
@@ -14,9 +16,8 @@ info:
     name: Apache 2.0
     url: 'http://www.apache.org/licenses/LICENSE-2.0.html'
 
-    
+##### USER MANAGER #####
 paths:
-
   /:
     post:
       summary: Creates a new user manager
@@ -74,6 +75,165 @@ paths:
           $ref: '#/components/responses/UnauthorizedError'
         '404':
           description: User manager not found
+
+  ##### CONFIGURATION AUTHENTIFICATION #####
+  /{userManagerId}/config/authentications:
+    parameters:
+    - "$ref": "#/components/parameters/userManagerIdParam"
+    post:
+      summary: add a new AuthenticationProvider
+      tags:
+      - AuthenticationProviders
+      requestBody:
+        $ref: "#/components/requestBodies/AuthenticationProviderRequest"
+      responses:
+        '200':
+          description: AuthenticationProvider successfully created
+          content:
+            application/json:
+              schema:
+                type: string
+                description: the ID of the created object
+        '400':
+          description: Bad request
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '422':
+          description: Invalid session data
+
+  /{userManagerId}/config/authentications/{authenticationProviderId}:
+    parameters:
+    - "$ref": "#/components/parameters/userManagerIdParam"
+    - "$ref": "#/components/parameters/authenticationProviderIdParam"
+    get:
+      summary: Returns an AuthenticationProvider by ID
+      tags:
+      - AuthenticationProviders
+      responses:
+        '200':
+          description: An authentication provider
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AuthenticationProvider"
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '404':
+          description: AuthenticationProvider not found
+    delete:
+      summary: Deletes an authentication provider by ID
+      tags:
+      - AuthenticationProviders
+      responses:
+        '200':
+          description: The authentication provider was deleted
+          content:
+            application/json:
+              schema:
+                type: string
+                description: the ID of the deleted object
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '404':
+          description: AuthenticationProvider not found
+    put:
+      summary: Updates an authentication provider by ID
+      tags:
+      - AuthenticationProviders
+      requestBody:
+        $ref: "#/components/requestBodies/AuthenticationProviderRequest"
+      responses:
+        '200':
+          description: The authentication provider was updated
+          content:
+            application/json:
+              schema:
+                type: string
+                description: the ID of the updated object
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '404':
+          description: AuthenticationProvider not found
+
+  ##### CONFIGURATION AUTHORIZATION #####
+  /{userManagerId}/config/authorizations:
+    parameters:
+    - "$ref": "#/components/parameters/userManagerIdParam"
+    post:
+      summary: add a new AuthorizationProvider
+      tags:
+      - AuthorizationProviders
+      requestBody:
+        $ref: "#/components/requestBodies/AuthorizationProviderRequest"
+      responses:
+        '200':
+          description: AuthorizationProvider successfully created
+          content:
+            application/json:
+              schema:
+                type: string
+                description: the ID of the created object
+        '400':
+          description: Bad request
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '422':
+          description: Invalid AuthorizationProvider data
+
+  /{userManagerId}/config/authorizations/{authorizationProviderId}:
+    parameters:
+    - "$ref": "#/components/parameters/userManagerIdParam"
+    - "$ref": "#/components/parameters/authorizationProviderIdParam"
+    get:
+      summary: Returns an AuthorizationProvider by ID
+      tags:
+      - AuthorizationProviders
+      responses:
+        '200':
+          description: An authorization provider
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AuthorizationProvider"
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '404':
+          description: AuthorizationProvider not found
+    delete:
+      summary: Deletes an authorization provider by ID
+      tags:
+      - AuthorizationProviders
+      responses:
+        '200':
+          description: The authorization provider was deleted
+          content:
+            application/json:
+              schema:
+                type: string
+                description: the ID of the deleted object
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '404':
+          description: AuthorizationProvider not found
+    put:
+      summary: Updates an authorization provider by ID
+      tags:
+      - AuthorizationProvider
+      requestBody:
+        $ref: "#/components/requestBodies/AuthorizationProviderRequest"
+      responses:
+        '200':
+          description: The authorization provider was updated
+          content:
+            application/json:
+              schema:
+                type: string
+                description: the ID of the updated object
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '404':
+          description: AuthorizationProvider not found
+
   ##### AUTHENTICATE #####
   /{userManagerId}/authenticate/password:
     parameters:
@@ -542,6 +702,22 @@ components:
       bearerFormat: JWT
 
   schemas:
+    AuthenticationProvider:
+      type: object
+      properties:
+        id:
+          type: string
+      required:
+      - id
+
+    AuthorizationProvider:
+      type: object
+      properties:
+        id:
+          type: string
+      required:
+      - id
+
     UserManager:
       type: object
       properties:
@@ -722,6 +898,22 @@ components:
         minimum: 0
         default: 0
 
+    authenticationProviderIdParam:
+      in: path
+      name: authenticationProviderId
+      schema:
+        type: string
+      required: true
+      description: The authentication provider id
+
+    authorizationProviderIdParam:
+      in: path
+      name: authorizationProviderId
+      schema:
+        type: string
+      required: true
+      description: The authorization provider id
+
     sessionIdParam:
       in: path
       name: sessionId
@@ -777,7 +969,21 @@ components:
         application/json:
           schema:
             $ref: '#/components/schemas/UserManager'
-            
+
+    AuthenticationProviderRequest:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/AuthenticationProvider'
+
+    AuthorizationProviderRequest:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/AuthorizationProvider'
+
     LoginRequest:
       required: true
       content:
@@ -860,6 +1066,8 @@ components:
             $ref: "#/components/schemas/GroupIdsResponse"
   
 tags:
+  - name: AuthenticationProviders
+  - name: AuthorizationProviders
   - name: UserManagers
   - name: Authenticate
   - name: Users
