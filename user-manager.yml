@@ -228,9 +228,6 @@ paths:
         '401':
           $ref: '#/components/responses/UnauthorizedError'
 
-  /{userManagerId}/authenticate/assembloo/signup:
-    parameters:
-    - "$ref": "#/components/parameters/userManagerIdParam"
     post:
       operationId: signup
       summary: signup page
