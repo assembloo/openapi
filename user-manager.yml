@@ -191,7 +191,7 @@ paths:
     parameters:
     - "$ref": "#/components/parameters/userManagerIdParam"
     post:
-      summary: sign the user in using the assembllo provider
+      summary: sign the user in using the assembloo provider
       tags:
       - Authenticate
       requestBody:
@@ -1004,6 +1004,13 @@ components:
           type: string
         password:
           type: string
+        status:
+          type: string
+          enum:
+          - email_confirmation_required
+          - active
+          - inactive
+          description: "state of the user account: active means the user can login, inactive means the user cannot log in, email_confirmation_required means another step is required to set the account to active"
       required:
       - email
       - password
@@ -1265,6 +1272,14 @@ components:
 
     UnauthorizedError:
       description: Access token is missing or invalid
+      headers:
+        WWW-Authenticate:
+          schema:
+            type: string
+            enum:
+            - Bearer
+            - OAuth
+            description: describe the authorization method required to complete authentication
 
 tags:
   - name: Access Tokens
