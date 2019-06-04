@@ -287,6 +287,14 @@ components:
   responses:
     UnauthorizedError:
       description: Access token is missing or invalid
+      headers:
+        WWW-Authenticate:
+          schema:
+            type: string
+            enum:
+            - Bearer
+            - OAuth
+            description: describe the authorization method required to complete authentication
 
     InternalError:
       description: An error has occured
