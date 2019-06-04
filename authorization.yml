@@ -11,35 +11,13 @@ info:
     
 paths:
 
-#  /users/{userId}/is_allowed:
-#    parameters:
-#    - "$ref": "#/components/parameters/userIdParam"
-#    get:
-#      summary: Find out if a user is allowed to perform an operation
-#      tags:
-#      - Users
-#      parameters:
-#        - in: path
-#          name: permission
-#          schema:
-#            type: string
-#          required: true
-#          description: Permission string (e.g. groups:read:456)
-#      responses:
-#        '200':
-#          description: The user was authorized
-#        '401':
-#          $ref: '#/components/responses/UnauthorizedError'
+##### ROLE DEFINITIONS #####
 
-##### ROLE MEMBERSHIP #####
-
-  /{serviceId}/memberships/search:
-    parameters:
-    - "$ref": "#/components/parameters/serviceIdParam"
+  /role_definitions/search:
     post:
-      summary: Search the memberships
+      summary: Search the role definitions
       tags:
-      - Memberships
+      - RoleDefinitions
       requestBody:
         $ref: "#/components/requestBodies/SearchRequest"
       responses:
@@ -47,13 +25,11 @@ paths:
           $ref: '#/components/responses/SearchResponse'
         '401':
           $ref: '#/components/responses/UnauthorizedError'
-  /{serviceId}/memberships:
-    parameters:
-    - "$ref": "#/components/parameters/serviceIdParam"
+  /role_definitions:
     get:
-      summary: List the memberships
+      summary: List the role definitions
       tags:
-      - Memberships
+      - RoleDefinitions
       parameters:
       - "$ref": "#/components/parameters/pageParam"
       responses:
@@ -62,14 +38,14 @@ paths:
         '401':
           $ref: '#/components/responses/UnauthorizedError'
     post:
-      summary: Creates a membership
+      summary: Creates a role definition
       tags:
-      - Memberships
+      - RoleDefinitions
       requestBody:
-        $ref: "#/components/requestBodies/MembershipRequest"
+        $ref: "#/components/requestBodies/RoleDefinitionRequest"
       responses:
         '200':
-          description: Membership successfully created
+          description: Role definition successfully created
           content:
             application/json:
               schema:
@@ -80,33 +56,52 @@ paths:
         '401':
           $ref: '#/components/responses/UnauthorizedError'
         '422':
-          description: Invalid membership data
-  /{serviceId}/memberships/{membershipId}:
+          description: Invalid role definition data
+  /role_definitions/{roleDefinitionId}:
     parameters:
-    - "$ref": "#/components/parameters/serviceIdParam"
-    - "$ref": "#/components/parameters/membershipIdParam"
+    - "$ref": "#/components/parameters/roleDefinitionIdParam"
     get:
-      summary: Returns a membership by ID
+      summary: Returns a role definition by ID
       tags:
-      - Memberships
+      - RoleDefinitions
       responses:
         '200':
-          description: A membership
+          description: A role definition
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/Membership"
+                $ref: "#/components/schemas/RoleDefinition"
         '401':
           $ref: '#/components/responses/UnauthorizedError'
         '404':
-          description: Membership not found
-    delete:
-      summary: Deletes a membership by ID
+          description: Authorization not found
+    put:
+      summary: Updates a role definition
       tags:
-      - Memberships
+      - RoleDefinitions
+      requestBody:
+        $ref: "#/components/requestBodies/RoleDefinitionRequest"
       responses:
         '200':
-          description: The membership was deleted
+          description: Role definition successfully updated
+          content:
+            application/json:
+              schema:
+                type: string
+                description: the ID of the updated object
+        '400':
+          description: Bad request
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '422':
+          description: Invalid role definition data
+    delete:
+      summary: Deletes a role definition by ID
+      tags:
+      - RoleDefinitions
+      responses:
+        '200':
+          description: The role definition was deleted
           content:
             application/json:
               schema:
@@ -115,55 +110,132 @@ paths:
         '401':
           $ref: '#/components/responses/UnauthorizedError'
         '404':
-          description: Membership not found
-  /{serviceId}/memberships/has_permission:
-    parameters:
-    - "$ref": "#/components/parameters/serviceIdParam"
-    get:
-      operationId: hasPermission
-      summary: Find out if we have a certain permission
+          description: Role definition not found
+          
+          
+##### ROLE ASSIGNMENTS #####
+
+  /role_assignments/search:
+    post:
+      summary: Search the role assignments
       tags:
-      - Memberships
-      parameters:
-        - in: path
-          name: permission
-          schema:
-            type: string
-          required: true
-          description: Permission string (e.g. groups:read:456)
+      - RoleAssignments
+      requestBody:
+        $ref: "#/components/requestBodies/SearchRequest"
       responses:
         '200':
-          description: We're authorized
+          $ref: '#/components/responses/SearchResponse'
         '401':
           $ref: '#/components/responses/UnauthorizedError'
+  /role_assignments:
+    get:
+      summary: List the role assignments
+      tags:
+      - RoleAssignments
+      parameters:
+      - "$ref": "#/components/parameters/pageParam"
+      responses:
+        '200':
+          $ref: '#/components/responses/SearchResponse'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+    post:
+      summary: Creates a role assignment
+      tags:
+      - RoleAssignments
+      requestBody:
+        $ref: "#/components/requestBodies/RoleAssignmentRequest"
+      responses:
+        '200':
+          description: Role assignment successfully created
+          content:
+            application/json:
+              schema:
+                type: string
+                description: the ID of the created object
+        '400':
+          description: Bad request
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '422':
+          description: Invalid role assignment data
+  /role_assignments/{roleAssignmentId}:
+    parameters:
+    - "$ref": "#/components/parameters/roleAssignmentIdParam"
+    get:
+      summary: Returns a role assignment by ID
+      tags:
+      - RoleAssignments
+      responses:
+        '200':
+          description: A role assignment
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/RoleAssignment"
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '404':
+          description: Role assignment not found
+    delete:
+      summary: Deletes a role assignment by ID
+      tags:
+      - RoleAssignments
+      responses:
+        '200':
+          description: The role assignment was deleted
+          content:
+            application/json:
+              schema:
+                type: string
+                description: the ID of the deleted object
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '404':
+          description: Role assignment not found
+  
   
 components:
 
   schemas:
 
-    Membership:
+    RoleDefinition:
       type: object
-      description: describes the fact that someone/something is part of/attached to a owner
+      description: a list of roles with their permissions
+      properties:
+        role_id:
+          type: string
+        name:
+          type: string
+        authorizations:
+          type: array
+          items:
+            type: string
+            description: any authorization description, could be a string representation of a wildcard authorization like printer:print:lp123
+      required:
+      - role_id
+      - name
+
+    RoleAssignment:
+      type: object
+      description: List of roles given to users on specific resources
       properties:
         id:
           type: string
-        ownerId:
+        subject_id:
           type: string
-          description: e.g. a groupId
-        objectId:
+          description: user or group this role applies to
+        role_id:
           type: string
-        roleId:
+        resource_id:
           type: string
-          description: the role of the owner on the object, gives a list of permissions on the object to the owner
+          description: the path to the resource that the role applies to
       required:
-      - owner_id
-      - object_id
+      - subject_id
       - role_id
-      example:
-        id: 63312df2-dabd-46c4-a090-b5e628266111
-        ownerId: 97292dac-b0ab-4fca-970f-d0f9578e47db
-        objectId: 042f4ef2-d798-4e94-84b7-41a76275d878
-        roleId: analyst
+      - resource_id
+
+    # AssignedPermissions will be defined later if needed
         
   parameters:
     pageParam:
@@ -174,20 +246,20 @@ components:
         type: integer
         minimum: 0
         default: 0
-    membershipIdParam:
+    roleDefinitionIdParam:
       in: path
-      name: membershipId
+      name: roleDefinitionId
       schema:
         type: string
       required: true
-      description: The role membership id
-    serviceIdParam:
+      description: The role definition id
+    roleAssignmentIdParam:
       in: path
-      name: serviceId
+      name: roleAssignmentId
       schema:
         type: string
       required: true
-      description: The id of the service the membership sub-service is mounted on
+      description: The role assignment id
 
   requestBodies:
     SearchRequest:
@@ -198,12 +270,19 @@ components:
           schema:
             $ref: "https://raw.githubusercontent.com/assembloo/openapi/1.0.0/repository-search.yml#/components/schemas/SearchRequest"
             
-    MembershipRequest:
+    RoleDefinitionRequest:
       required: true
       content:
         application/json:
           schema:
-            $ref: "#/components/schemas/Membership"
+            $ref: "#/components/schemas/RoleDefinition"
+            
+    RoleAssignmentRequest:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/RoleAssignment"
     
   responses:
     UnauthorizedError:
@@ -217,9 +296,7 @@ components:
             $ref: "https://raw.githubusercontent.com/assembloo/openapi/1.0.0/repository-search.yml#/components/schemas/SearchResponse"
   
 tags:
-  - name: Memberships
+  - name: RoleDefinitions
+  - name: RoleAssignments
 
-security:
-  - bearerAuth: []
-  
 # EOF
