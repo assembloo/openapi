@@ -76,6 +76,20 @@ paths:
 
   ##### AUTHENTIFICATION CONFIGURATION #####
   
+  /{userManagerId}/authentication/providers/search:
+    parameters:
+    - "$ref": "#/components/parameters/userManagerIdParam"
+    post:
+      summary: Search the authentication providers
+      tags:
+      - AuthenticationProviders
+      requestBody:
+        $ref: "#/components/requestBodies/SearchRequest"
+      responses:
+        '200':
+          $ref: '#/components/responses/SearchResponse'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
   /{userManagerId}/authentication/providers:
     parameters:
     - "$ref": "#/components/parameters/userManagerIdParam"
@@ -172,6 +186,7 @@ paths:
     - "$ref": "#/components/parameters/userManagerIdParam"
     get:
       summary: display a login screen
+      operationId: getSignin
       tags:
       - Authentication
       responses:
@@ -193,17 +208,14 @@ paths:
     - "$ref": "#/components/parameters/userManagerIdParam"
     post:
       summary: sign the user in using the assembloo provider
+      operationId: doAssemblooSignin
       tags:
       - Authentication
       requestBody:
         $ref: "#/components/requestBodies/SigninRequest"
       responses:
         '200':
-          description: The user successfully signed-in
-          content:
-            application/json:
-              schema:
-                type: string
+          $ref: '#/components/responses/SigninResponse'
         '400':
           description: Bad request
         '401':
@@ -217,6 +229,7 @@ paths:
     - "$ref": "#/components/parameters/userManagerIdParam"
     get:
       summary: display the signup page
+      operationId: getAssemblooSignup
       tags:
       - Authentication
       responses:
@@ -232,6 +245,7 @@ paths:
     post:
       operationId: signup
       summary: signup page
+      operationId: doAssemblooSignup
       tags:
       - Authentication
       requestBody:
@@ -252,6 +266,7 @@ paths:
     - "$ref": "#/components/parameters/authenticationProviderIdParam"
     post:
       summary: sign the user in using the specified authentication provider id
+      operationId: doAuthenticationProviderSignin
       tags:
       - Authentication
       responses:
@@ -273,8 +288,8 @@ paths:
     - "$ref": "#/components/parameters/userManagerIdParam"
     - "$ref": "#/components/parameters/authenticationProviderIdParam"
     get:
-#      operationId: signoutogout
       summary: sign the user out
+      operationId: doAuthenticationProviderSignout
       tags:
       - Authentication
       responses:
@@ -283,12 +298,12 @@ paths:
         '401':
           $ref: '#/components/responses/UnauthorizedError'
 
-  /{userManagerId}/authentication/callback/{authenticationProviderId}:
+  /{userManagerId}/authentication/{authenticationProviderId}/callback:
     parameters:
     - "$ref": "#/components/parameters/userManagerIdParam"
     - "$ref": "#/components/parameters/authenticationProviderIdParam"
     post:
-      operationId: callback
+      operationId: doAuthenticationProviderCallback
       summary: callback url called by authentication provider
       tags:
       - Authentication
@@ -303,6 +318,20 @@ paths:
           $ref: '#/components/responses/UnauthorizedError'
 
   ##### AUTHORIZATION CONFIGURATION #####
+  /{userManagerId}/authorization/providers/search:
+    parameters:
+    - "$ref": "#/components/parameters/userManagerIdParam"
+    post:
+      summary: Search the authorization providers
+      tags:
+      - AuthorizationProviders
+      requestBody:
+        $ref: "#/components/requestBodies/SearchRequest"
+      responses:
+        '200':
+          $ref: '#/components/responses/SearchResponse'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
   /{userManagerId}/authorization/providers:
     parameters:
     - "$ref": "#/components/parameters/userManagerIdParam"
@@ -969,7 +998,7 @@ components:
     SigninRequest:
       type: object
       properties:
-        username:
+        email:
           type: string
         password:
           type: string
@@ -1006,18 +1035,21 @@ components:
         password:
           type: string
         status:
-          type: string
-          enum:
-          - email_confirmation_required
-          - active
-          - inactive
-          description: "state of the user account: active means the user can login, inactive means the user cannot log in, email_confirmation_required means another step is required to set the account to active"
+          $ref: '#/components/schemas/UserStatus'
       required:
       - email
       - password
       example:
         id: 63312df2-dabd-46c4-a090-b5e628266329
         email: johndoe@example.com
+
+    UserStatus:
+      type: string
+      enum:
+      - email_confirmation_required
+      - active
+      - inactive
+      description: "state of the user account: active means the user can login, inactive means the user cannot log in, email_confirmation_required means another step is required to set the account to active"
         
     AccessToken:
       type: object
@@ -1270,6 +1302,14 @@ components:
         application/json:
           schema:
             $ref: "#/components/schemas/SessionsResponse"
+
+    SigninResponse:
+      description: The structure to describe signin responses
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/User'
 
     UnauthorizedError:
       description: Access token is missing or invalid
