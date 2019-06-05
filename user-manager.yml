@@ -74,8 +74,9 @@ paths:
         '404':
           description: User manager not found
 
-  ##### CONFIGURATION AUTHENTIFICATION #####
-  /{userManagerId}/config/authentications:
+  ##### AUTHENTIFICATION CONFIGURATION #####
+  
+  /{userManagerId}/authentication/providers:
     parameters:
     - "$ref": "#/components/parameters/userManagerIdParam"
     get:
@@ -111,7 +112,7 @@ paths:
         '422':
           description: Invalid session data
 
-  /{userManagerId}/config/authentications/{authenticationProviderId}:
+  /{userManagerId}/authentication/providers/{authenticationProviderId}:
     parameters:
     - "$ref": "#/components/parameters/userManagerIdParam"
     - "$ref": "#/components/parameters/authenticationProviderIdParam"
@@ -166,13 +167,13 @@ paths:
           description: AuthenticationProvider not found
 
   ##### AUTHENTICATION #####
-  /{userManagerId}/authenticate/signin:
+  /{userManagerId}/authentication/signin:
     parameters:
     - "$ref": "#/components/parameters/userManagerIdParam"
     get:
       summary: display a login screen
       tags:
-      - Authenticate
+      - Authentication
       responses:
         '200':
           description: the signing page is displayed
@@ -187,13 +188,13 @@ paths:
         '422':
           description: Invalid AuthenticationProviderId data
 
-  /{userManagerId}/authenticate/assembloo/signin:
+  /{userManagerId}/authentication/assembloo/signin:
     parameters:
     - "$ref": "#/components/parameters/userManagerIdParam"
     post:
       summary: sign the user in using the assembloo provider
       tags:
-      - Authenticate
+      - Authentication
       requestBody:
         $ref: "#/components/requestBodies/SigninRequest"
       responses:
@@ -211,13 +212,13 @@ paths:
           description: Invalid AuthorizationProvider data
 
 
-  /{userManagerId}/authenticate/assembloo/signup:
+  /{userManagerId}/authentication/assembloo/signup:
     parameters:
     - "$ref": "#/components/parameters/userManagerIdParam"
     get:
       summary: display the signup page
       tags:
-      - Authenticate
+      - Authentication
       responses:
         '200':
           description: the signup page is displayed
@@ -232,7 +233,7 @@ paths:
       operationId: signup
       summary: signup page
       tags:
-      - Authenticate
+      - Authentication
       requestBody:
         $ref: "#/components/requestBodies/SignupRequest"
       responses:
@@ -245,14 +246,14 @@ paths:
         '401':
           $ref: '#/components/responses/UnauthorizedError'
 
-  /{userManagerId}/authenticate/{authenticationProviderId}/signin:
+  /{userManagerId}/authentication/{authenticationProviderId}/signin:
     parameters:
     - "$ref": "#/components/parameters/userManagerIdParam"
     - "$ref": "#/components/parameters/authenticationProviderIdParam"
     post:
       summary: sign the user in using the specified authentication provider id
       tags:
-      - Authenticate
+      - Authentication
       responses:
         '200':
           description: The user successfully signed-in
@@ -267,7 +268,7 @@ paths:
         '422':
           description: Invalid AuthorizationProvider data
 
-  /{userManagerId}/authenticate/{authenticationProviderId}/signout:
+  /{userManagerId}/authentication/{authenticationProviderId}/signout:
     parameters:
     - "$ref": "#/components/parameters/userManagerIdParam"
     - "$ref": "#/components/parameters/authenticationProviderIdParam"
@@ -275,14 +276,14 @@ paths:
 #      operationId: signoutogout
       summary: sign the user out
       tags:
-      - Authenticate
+      - Authentication
       responses:
         '200':
-          description: the use was signed-out
+          description: the user was signed-out
         '401':
           $ref: '#/components/responses/UnauthorizedError'
 
-  /{userManagerId}/authenticate/callback/{authenticationProviderId}:
+  /{userManagerId}/authentication/callback/{authenticationProviderId}:
     parameters:
     - "$ref": "#/components/parameters/userManagerIdParam"
     - "$ref": "#/components/parameters/authenticationProviderIdParam"
@@ -290,7 +291,7 @@ paths:
       operationId: callback
       summary: callback url called by authentication provider
       tags:
-      - Authenticate
+      - Authentication
       responses:
         '200':
           description: The user successfully signed-in
@@ -301,8 +302,8 @@ paths:
         '401':
           $ref: '#/components/responses/UnauthorizedError'
 
-  ##### CONFIGURATION AUTHORIZATION #####
-  /{userManagerId}/config/authorizations:
+  ##### AUTHORIZATION CONFIGURATION #####
+  /{userManagerId}/authorization/providers:
     parameters:
     - "$ref": "#/components/parameters/userManagerIdParam"
     get:
@@ -338,7 +339,7 @@ paths:
         '422':
           description: Invalid AuthorizationProvider data
 
-  /{userManagerId}/config/authorizations/{authorizationProviderId}:
+  /{userManagerId}/authorization/providers/{authorizationProviderId}:
     parameters:
     - "$ref": "#/components/parameters/userManagerIdParam"
     - "$ref": "#/components/parameters/authorizationProviderIdParam"
@@ -376,7 +377,7 @@ paths:
     put:
       summary: Updates an authorization provider by ID
       tags:
-      - AuthorizationProvider
+      - AuthorizationProviders
       requestBody:
         $ref: "#/components/requestBodies/AuthorizationProviderRequest"
       responses:
@@ -1283,7 +1284,7 @@ components:
 
 tags:
   - name: Access Tokens
-  - name: Authenticate
+  - name: Authentication
   - name: AuthenticationProviders
   - name: AuthorizationProviders
   - name: Groups
