@@ -203,7 +203,7 @@ components:
       type: object
       description: a list of roles with their permissions
       properties:
-        role_id:
+        id:
           type: string
         description:
           type: string
