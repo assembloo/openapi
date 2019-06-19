@@ -74,46 +74,68 @@ paths:
         '404':
           description: User manager not found
 
-  ##### AUTHENTIFICATION CONFIGURATION #####
+  ##### AUTHENTICATION CONFIGURATION #####
   
-  /{userManagerId}/authentication/providers/search:
-    parameters:
-    - "$ref": "#/components/parameters/userManagerIdParam"
-    post:
-      summary: Search the authentication providers
-      tags:
-      - AuthenticationProviders
-      requestBody:
-        $ref: "#/components/requestBodies/SearchRequest"
-      responses:
-        '200':
-          $ref: '#/components/responses/SearchResponse'
-        '401':
-          $ref: '#/components/responses/UnauthorizedError'
-  /{userManagerId}/authentication/providers:
+#  /{userManagerId}/authentication/providers/search:
+#    parameters:
+#    - "$ref": "#/components/parameters/userManagerIdParam"
+#    post:
+#      summary: Search the authentication providers
+#      tags:
+#      - AuthenticationProviders
+#      requestBody:
+#        $ref: "#/components/requestBodies/SearchRequest"
+#      responses:
+#        '200':
+#          $ref: '#/components/responses/SearchResponse'
+#        '401':
+#          $ref: '#/components/responses/UnauthorizedError'
+#  /{userManagerId}/authentication/providers:
+#    parameters:
+#    - "$ref": "#/components/parameters/userManagerIdParam"
+#    get:
+#      summary: List the authentication providers
+#      tags:
+#      - AuthenticationProviders
+#      parameters:
+#      - "$ref": "#/components/parameters/pageParam"
+#      responses:
+#        '200':
+#          $ref: '#/components/responses/SearchResponse'
+#        '401':
+#          $ref: '#/components/responses/UnauthorizedError'
+
+##### ASSEMBLOO AUTHENTICATION CONFIGURATION #####
+
+  /{userManagerId}/authentication/providers/assembloo:
     parameters:
     - "$ref": "#/components/parameters/userManagerIdParam"
     get:
-      summary: List the authentication providers
+      summary: Returns the assembloo authentication provider
+      operationId: get
       tags:
-      - AuthenticationProviders
-      parameters:
-      - "$ref": "#/components/parameters/pageParam"
+      - AssemblooAuthenticationProvider
       responses:
         '200':
-          $ref: '#/components/responses/SearchResponse'
+          description: A assembloo authentication provider
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AssemblooAuthenticationProvider"
         '401':
           $ref: '#/components/responses/UnauthorizedError'
-
+        '404':
+          description: Authentication provider not found
     post:
-      summary: add a new AuthenticationProvider
+      summary: Adds the assembloo authentication provider
+      operationId: create
       tags:
-      - AuthenticationProviders
+      - AssemblooAuthenticationProvider
       requestBody:
-        $ref: "#/components/requestBodies/AuthenticationProviderRequest"
+        $ref: "#/components/requestBodies/AssemblooAuthenticationProviderRequest"
       responses:
         '200':
-          description: AuthenticationProvider successfully created
+          description: Authentication provider successfully created
           content:
             application/json:
               schema:
@@ -123,53 +145,16 @@ paths:
           description: Bad request
         '401':
           $ref: '#/components/responses/UnauthorizedError'
-        '422':
-          description: Invalid session data
-
-  /{userManagerId}/authentication/providers/{authenticationProviderId}:
-    parameters:
-    - "$ref": "#/components/parameters/userManagerIdParam"
-    - "$ref": "#/components/parameters/authenticationProviderIdParam"
-    get:
-      summary: Returns an AuthenticationProvider by ID
-      tags:
-      - AuthenticationProviders
-      responses:
-        '200':
-          description: An authentication provider
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/AuthenticationProvider"
-        '401':
-          $ref: '#/components/responses/UnauthorizedError'
-        '404':
-          description: AuthenticationProvider not found
-    delete:
-      summary: Deletes an authentication provider by ID
-      tags:
-      - AuthenticationProviders
-      responses:
-        '200':
-          description: The authentication provider was deleted
-          content:
-            application/json:
-              schema:
-                type: string
-                description: the ID of the deleted object
-        '401':
-          $ref: '#/components/responses/UnauthorizedError'
-        '404':
-          description: AuthenticationProvider not found
     put:
-      summary: Updates an authentication provider by ID
+      summary: Updates the assembloo authentication provider
+      operationId: update
       tags:
-      - AuthenticationProviders
+      - AssemblooAuthenticationProvider
       requestBody:
-        $ref: "#/components/requestBodies/AuthenticationProviderRequest"
+        $ref: "#/components/requestBodies/AssemblooAuthenticationProviderRequest"
       responses:
         '200':
-          description: The authentication provider was updated
+          description: The assembloo authentication provider was updated
           content:
             application/json:
               schema:
@@ -178,30 +163,275 @@ paths:
         '401':
           $ref: '#/components/responses/UnauthorizedError'
         '404':
-          description: AuthenticationProvider not found
+          description: Authentication provider not found
+    delete:
+      summary: Deletes the assembloo authentication provider
+      operationId: delete
+      tags:
+      - AssemblooAuthenticationProvider
+      responses:
+        '200':
+          description: The assembloo authentication provider was deleted
+          content:
+            application/json:
+              schema:
+                type: string
+                description: the ID of the deleted object
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '404':
+          description: Authentication provider not found
 
-  ##### AUTHENTICATION #####
-  /{userManagerId}/authentication/signin:
+
+##### FACEBOOK AUTHENTICATION CONFIGURATION #####
+
+  /{userManagerId}/authentication/providers/facebook:
     parameters:
     - "$ref": "#/components/parameters/userManagerIdParam"
     get:
-      summary: display a login screen
-      operationId: getSignin
+      summary: Returns the facebook authentication provider
+      operationId: get
       tags:
-      - Authentication
+      - FacebookAuthenticationProvider
       responses:
         '200':
-          description: the signing page is displayed
+          description: A facebook authentication provider
           content:
-            text/html:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/FacebookAuthenticationProvider"
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '404':
+          description: Authentication provider not found
+    post:
+      summary: Adds the facebook authentication provider
+      operationId: create
+      tags:
+      - FacebookAuthenticationProvider
+      requestBody:
+        $ref: "#/components/requestBodies/FacebookAuthenticationProviderRequest"
+      responses:
+        '200':
+          description: Authentication provider successfully created
+          content:
+            application/json:
               schema:
                 type: string
+                description: the ID of the created object
         '400':
           description: Bad request
         '401':
           $ref: '#/components/responses/UnauthorizedError'
-        '422':
-          description: Invalid AuthenticationProviderId data
+    put:
+      summary: Updates the facebook authentication provider
+      operationId: update
+      tags:
+      - FacebookAuthenticationProvider
+      requestBody:
+        $ref: "#/components/requestBodies/FacebookAuthenticationProviderRequest"
+      responses:
+        '200':
+          description: The facebook authentication provider was updated
+          content:
+            application/json:
+              schema:
+                type: string
+                description: the ID of the updated object
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '404':
+          description: Authentication provider not found
+    delete:
+      summary: Deletes the facebook authentication provider
+      operationId: delete
+      tags:
+      - FacebookAuthenticationProvider
+      responses:
+        '200':
+          description: The facebook authentication provider was deleted
+          content:
+            application/json:
+              schema:
+                type: string
+                description: the ID of the deleted object
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '404':
+          description: Authentication provider not found
+
+##### GITHUB AUTHENTICATION CONFIGURATION #####
+
+  /{userManagerId}/authentication/providers/github:
+    parameters:
+    - "$ref": "#/components/parameters/userManagerIdParam"
+    get:
+      summary: Returns the github authentication provider
+      operationId: get
+      tags:
+      - GithubAuthenticationProvider
+      responses:
+        '200':
+          description: A github authentication provider
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/GithubAuthenticationProvider"
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '404':
+          description: Authentication provider not found
+    post:
+      summary: Adds the github authentication provider
+      operationId: create
+      tags:
+      - GithubAuthenticationProvider
+      requestBody:
+        $ref: "#/components/requestBodies/GithubAuthenticationProviderRequest"
+      responses:
+        '200':
+          description: Authentication provider successfully created
+          content:
+            application/json:
+              schema:
+                type: string
+                description: the ID of the created object
+        '400':
+          description: Bad request
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+    put:
+      summary: Updates the github authentication provider
+      operationId: update
+      tags:
+      - GithubAuthenticationProvider
+      requestBody:
+        $ref: "#/components/requestBodies/GithubAuthenticationProviderRequest"
+      responses:
+        '200':
+          description: The github authentication provider was updated
+          content:
+            application/json:
+              schema:
+                type: string
+                description: the ID of the updated object
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '404':
+          description: Authentication provider not found
+    delete:
+      summary: Deletes the github authentication provider
+      operationId: delete
+      tags:
+      - GithubAuthenticationProvider
+      responses:
+        '200':
+          description: The github authentication provider was deleted
+          content:
+            application/json:
+              schema:
+                type: string
+                description: the ID of the deleted object
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '404':
+          description: Authentication provider not found
+
+##### GOOGLE AUTHENTICATION CONFIGURATION #####
+
+  /{userManagerId}/authentication/providers/google:
+    parameters:
+    - "$ref": "#/components/parameters/userManagerIdParam"
+    get:
+      summary: Returns the google authentication provider
+      operationId: get
+      tags:
+      - GoogleAuthenticationProvider
+      responses:
+        '200':
+          description: A google authentication provider
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/GoogleAuthenticationProvider"
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '404':
+          description: Authentication provider not found
+    post:
+      summary: Adds the google authentication provider
+      operationId: create
+      tags:
+      - GoogleAuthenticationProvider
+      requestBody:
+        $ref: "#/components/requestBodies/GoogleAuthenticationProviderRequest"
+      responses:
+        '200':
+          description: Authentication provider successfully created
+          content:
+            application/json:
+              schema:
+                type: string
+                description: the ID of the created object
+        '400':
+          description: Bad request
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+    put:
+      summary: Updates the google authentication provider
+      operationId: update
+      tags:
+      - GoogleAuthenticationProvider
+      requestBody:
+        $ref: "#/components/requestBodies/GoogleAuthenticationProviderRequest"
+      responses:
+        '200':
+          description: The google authentication provider was updated
+          content:
+            application/json:
+              schema:
+                type: string
+                description: the ID of the updated object
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '404':
+          description: Authentication provider not found
+    delete:
+      summary: Deletes the google authentication provider
+      operationId: delete
+      tags:
+      - GoogleAuthenticationProvider
+      responses:
+        '200':
+          description: The google authentication provider was deleted
+          content:
+            application/json:
+              schema:
+                type: string
+                description: the ID of the deleted object
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '404':
+          description: Authentication provider not found
+
+  ##### AUTHENTICATION #####
+#  /{userManagerId}/authentication/signin:
+#    parameters:
+#    - "$ref": "#/components/parameters/userManagerIdParam"
+#    get:
+#      summary: display a login screen
+#      operationId: getSignin
+#      tags:
+#      - Authentication
+#      responses:
+#        '200':
+#          description: the signing page is displayed
+#          content:
+#            text/html:
+#              schema:
+#                type: string
+#        '400':
+#          description: Bad request
 
   /{userManagerId}/authentication/assembloo/signin:
     parameters:
@@ -212,7 +442,7 @@ paths:
       tags:
       - Authentication
       requestBody:
-        $ref: "#/components/requestBodies/SigninRequest"
+        $ref: '#/components/requestBodies/SigninRequest'
       responses:
         '200':
           $ref: '#/components/responses/SigninResponse'
@@ -221,29 +451,26 @@ paths:
         '401':
           $ref: '#/components/responses/UnauthorizedError'
         '422':
-          description: Invalid AuthorizationProvider data
+          description: Invalid AssemblooSigninRequest data
 
 
   /{userManagerId}/authentication/assembloo/signup:
     parameters:
     - "$ref": "#/components/parameters/userManagerIdParam"
-    get:
-      summary: display the signup page
-      operationId: getAssemblooSignup
-      tags:
-      - Authentication
-      responses:
-        '200':
-          description: the signup page is displayed
-          content:
-            text/html:
-              schema:
-                type: string
-        '401':
-          $ref: '#/components/responses/UnauthorizedError'
+#    get:
+#      summary: display the signup page
+#      operationId: getAssemblooSignup
+#      tags:
+#      - Authentication
+#      responses:
+#        '200':
+#          description: the signup page is displayed
+#          content:
+#            text/html:
+#              schema:
+#                type: string
 
     post:
-      operationId: signup
       summary: signup page
       operationId: doAssemblooSignup
       tags:
@@ -257,25 +484,21 @@ paths:
             application/json:
               schema:
                 type: string
-        '401':
-          $ref: '#/components/responses/UnauthorizedError'
+        '400':
+          description: Bad request
 
-  /{userManagerId}/authentication/{authenticationProviderId}/signin:
+  /{userManagerId}/authentication/facebook/signin:
     parameters:
     - "$ref": "#/components/parameters/userManagerIdParam"
-    - "$ref": "#/components/parameters/authenticationProviderIdParam"
-    post:
-      summary: sign the user in using the specified authentication provider id
-      operationId: doAuthenticationProviderSignin
+    - "$ref": "#/components/parameters/clientCallbackUrlParam"
+    get:
+      summary: sign the user into facebook
+      operationId: doFacebookSignin
       tags:
       - Authentication
       responses:
-        '200':
-          description: The user successfully signed-in
-          content:
-            application/json:
-              schema:
-                type: string
+        '302':
+          description: The authorization provider will redirect you to its login page
         '400':
           description: Bad request
         '401':
@@ -283,13 +506,12 @@ paths:
         '422':
           description: Invalid AuthorizationProvider data
 
-  /{userManagerId}/authentication/{authenticationProviderId}/signout:
+  /{userManagerId}/authentication/facebook/signout:
     parameters:
     - "$ref": "#/components/parameters/userManagerIdParam"
-    - "$ref": "#/components/parameters/authenticationProviderIdParam"
     get:
       summary: sign the user out
-      operationId: doAuthenticationProviderSignout
+      operationId: doFacebookSignout
       tags:
       - Authentication
       responses:
@@ -298,22 +520,117 @@ paths:
         '401':
           $ref: '#/components/responses/UnauthorizedError'
 
-  /{userManagerId}/authentication/{authenticationProviderId}/callback:
+  /{userManagerId}/authentication/facebook/callback:
     parameters:
     - "$ref": "#/components/parameters/userManagerIdParam"
-    - "$ref": "#/components/parameters/authenticationProviderIdParam"
-    post:
-      operationId: doAuthenticationProviderCallback
+    - "$ref": "#/components/parameters/oauth2Code"
+    - "$ref": "#/components/parameters/oauth2State"
+    get:
+      operationId: doFacebookCallback
       summary: callback url called by authentication provider
       tags:
       - Authentication
       responses:
         '200':
-          description: The user successfully signed-in
-          content:
-            application/json:
-              schema:
-                type: string
+          $ref: '#/components/responses/SigninResponse'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+
+  /{userManagerId}/authentication/github/signin:
+    parameters:
+    - "$ref": "#/components/parameters/userManagerIdParam"
+    - "$ref": "#/components/parameters/clientCallbackUrlParam"
+    get:
+      summary: sign the user into github
+      operationId: doGithubSignin
+      tags:
+      - Authentication
+      responses:
+        '302':
+          description: The authorization provider will redirect you to its login page
+        '400':
+          description: Bad request
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '422':
+          description: Invalid AuthorizationProvider data
+
+  /{userManagerId}/authentication/github/signout:
+    parameters:
+    - "$ref": "#/components/parameters/userManagerIdParam"
+    get:
+      summary: sign the user out
+      operationId: doGithubSignout
+      tags:
+      - Authentication
+      responses:
+        '200':
+          description: the user was signed-out
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+
+  /{userManagerId}/authentication/github/callback:
+    parameters:
+    - "$ref": "#/components/parameters/userManagerIdParam"
+    - "$ref": "#/components/parameters/oauth2Code"
+    - "$ref": "#/components/parameters/oauth2State"
+    get:
+      operationId: doGithubCallback
+      summary: callback url called by authentication provider
+      tags:
+      - Authentication
+      responses:
+        '200':
+          $ref: '#/components/responses/SigninResponse'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+
+  /{userManagerId}/authentication/google/signin:
+    parameters:
+    - "$ref": "#/components/parameters/userManagerIdParam"
+    - "$ref": "#/components/parameters/clientCallbackUrlParam"
+    get:
+      summary: sign the user into google
+      operationId: doGoogleSignin
+      tags:
+      - Authentication
+      responses:
+        '302':
+          description: The authorization provider will redirect you to its login page
+        '400':
+          description: Bad request
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '422':
+          description: Invalid AuthorizationProvider data
+
+  /{userManagerId}/authentication/google/signout:
+    parameters:
+    - "$ref": "#/components/parameters/userManagerIdParam"
+    get:
+      summary: sign the user out
+      operationId: doGoogleSignout
+      tags:
+      - Authentication
+      responses:
+        '200':
+          description: the user was signed-out
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+
+  /{userManagerId}/authentication/google/callback:
+    parameters:
+    - "$ref": "#/components/parameters/userManagerIdParam"
+    - "$ref": "#/components/parameters/oauth2Code"
+    - "$ref": "#/components/parameters/oauth2State"
+    get:
+      operationId: doGoogleCallback
+      summary: callback url called by authentication provider
+      tags:
+      - Authentication
+      responses:
+        '200':
+          $ref: '#/components/responses/SigninResponse'
         '401':
           $ref: '#/components/responses/UnauthorizedError'
 
@@ -872,7 +1189,7 @@ components:
       bearerFormat: JWT
 
   schemas:
-    AuthenticationProvider:
+    AssemblooAuthenticationProvider:
       type: object
       properties:
         id:
@@ -885,72 +1202,80 @@ components:
             type: string
             format: uri
           minItems: 1
+        allowSignup:
+          type: boolean
       required:
-      - id
-      - callbackUrls
-      discriminator:
-        propertyName: providerType
-        mapping:
-          assembloo:  '#/components/schemas/AssemblooAuthenticationProvider'
-          facebook:  '#/components/schemas/FacebookAuthenticationProvider'
-          github: '#/components/schemas/GithubAuthenticationProvider'
-          google: '#/components/schemas/GoogleAuthenticationProvider'
-
-    AssemblooAuthenticationProvider:
-      allOf:
-      - $ref: '#/components/schemas/AuthenticationProvider'
-      - type: object
-        properties:
-          allowSignup:
-            type: boolean
-        required:
-          - id
-          - callbackUrls
+        - enabled
+        - callbackUrls
 
     FacebookAuthenticationProvider:
-      allOf:
-      - $ref: '#/components/schemas/AuthenticationProvider'
-      - type: object
-        properties:
-          clientId:
+      type: object
+      properties:
+        id:
+          type: string
+        enabled:
+          type: boolean
+        callbackUrls:
+          type: array
+          items:
             type: string
-          clientSecret:
-            type: string
-        required:
-          - id
-          - callbackUrls
-          - clientId
-          - clientSecret
+            format: uri
+          minItems: 1
+        clientId:
+          type: string
+        clientSecret:
+          type: string
+      required:
+        - enabled
+        - callbackUrls
+        - clientId
+        - clientSecret
 
     GithubAuthenticationProvider:
-      allOf:
-      - $ref: '#/components/schemas/AuthenticationProvider'
-      - type: object
-        properties:
-          clientId:
+      type: object
+      properties:
+        id:
+          type: string
+        enabled:
+          type: boolean
+        callbackUrls:
+          type: array
+          items:
             type: string
-          clientSecret:
-            type: string
-        required:
-          - id
-          - callbackUrls
-          - clientId
-          - clientSecret
+            format: uri
+          minItems: 1
+        clientId:
+          type: string
+        clientSecret:
+          type: string
+      required:
+        - enabled
+        - callbackUrls
+        - clientId
+        - clientSecret
 
     GoogleAuthenticationProvider:
-      allOf:
-      - $ref: '#/components/schemas/AuthenticationProvider'
-      - type: object
-        properties:
-          clientId:
+      type: object
+      properties:
+        id:
+          type: string
+        enabled:
+          type: boolean
+        callbackUrls:
+          type: array
+          items:
             type: string
-          clientSecret:
-            type: string
-        required:
-          - id
-          - callbackUrls
-          - clientId
-          - clientSecret
+            format: uri
+          minItems: 1
+        clientId:
+          type: string
+        clientSecret:
+          type: string
+      required:
+        - enabled
+        - callbackUrls
+        - clientId
+        - clientSecret
 
     AuthorizationProvider:
       type: object
@@ -998,10 +1323,44 @@ components:
     SigninRequest:
       type: object
       properties:
-        email:
+        type:
           type: string
-        password:
-          type: string
+      discriminator:
+        propertyName: type
+        mapping:
+          password:  '#/components/schemas/PasswordSigninRequest'
+          oauth2:  '#/components/schemas/Oauth2SigninRequest'
+
+    PasswordSigninRequest:
+      allOf:
+      - $ref: '#/components/schemas/SigninRequest'
+      - type: object
+        properties:
+          email:
+            type: string
+          password:
+            type: string
+        required:
+          - email
+          - password
+
+    Oauth2SigninRequest:
+      allOf:
+      - $ref: '#/components/schemas/SigninRequest'
+      - type: object
+        properties:
+          callback_url:
+            type: string
+          provider_type:
+            $ref: '#/components/schemas/Oauth2ProviderType'
+            
+
+    Oauth2ProviderType:
+      type: string
+      enum:
+        - google
+        - facebook
+        - github
 
     SignupRequest:
       type: object
@@ -1026,29 +1385,28 @@ components:
       properties:
         id:
           type: string
-        email:
-          type: string
-        firstname:
-          type: string
-        lastname:
-          type: string
-        password:
-          type: string
+        attributes:
+          type: object
+          additionalProperties:
+            type: string
         status:
           $ref: '#/components/schemas/UserStatus'
       required:
-      - email
-      - password
+      - id
+      - attributes
       example:
         id: 63312df2-dabd-46c4-a090-b5e628266329
-        email: johndoe@example.com
+        attributes:
+          email: johndoe@example.com
+          firstname: john
+          lastname: doe
 
     UserStatus:
       type: string
       enum:
-      - email_confirmation_required
-      - active
-      - inactive
+        - email_confirmation_required
+        - active
+        - inactive
       description: "state of the user account: active means the user can login, inactive means the user cannot log in, email_confirmation_required means another step is required to set the account to active"
         
     AccessToken:
@@ -1137,14 +1495,6 @@ components:
         minimum: 0
         default: 0
 
-    authenticationProviderIdParam:
-      in: path
-      name: authenticationProviderId
-      schema:
-        type: string
-      required: true
-      description: The authentication provider id
-
     authorizationProviderIdParam:
       in: path
       name: authorizationProviderId
@@ -1192,6 +1542,30 @@ components:
         type: string
       required: true
       description: The group id
+
+    oauth2Code:
+      in: query
+      name: code
+      schema:
+        type: string
+      required: true
+      description: The auth code from the Authorization Code flow
+
+    oauth2State:
+      in: query
+      name: state
+      schema:
+        type: string
+      required: true
+      description: The auth state given to the oauth2 authorization server
+
+    clientCallbackUrlParam:
+      in: query
+      name: clientCallbackUrl
+      schema:
+        type: string
+      required: true
+      description: The URL to return to once the signin is done
   
   requestBodies:
     SearchRequest:
@@ -1225,12 +1599,33 @@ components:
           schema:
             $ref: '#/components/schemas/UserManager'
 
-    AuthenticationProviderRequest:
+    AssemblooAuthenticationProviderRequest:
       required: true
       content:
         application/json:
           schema:
-            $ref: '#/components/schemas/AuthenticationProvider'
+            $ref: '#/components/schemas/AssemblooAuthenticationProvider'
+
+    FacebookAuthenticationProviderRequest:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/FacebookAuthenticationProvider'
+
+    GithubAuthenticationProviderRequest:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/GithubAuthenticationProvider'
+
+    GoogleAuthenticationProviderRequest:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/GoogleAuthenticationProvider'
 
     AuthorizationProviderRequest:
       required: true
@@ -1305,11 +1700,10 @@ components:
 
     SigninResponse:
       description: The structure to describe signin responses
-      required: true
       content:
         application/json:
           schema:
-            $ref: '#/components/schemas/User'
+            $ref: "#/components/schemas/User"
 
     UnauthorizedError:
       description: Access token is missing or invalid
@@ -1325,7 +1719,10 @@ components:
 tags:
   - name: Access Tokens
   - name: Authentication
-  - name: AuthenticationProviders
+  - name: AssemblooAuthenticationProvider
+  - name: FacebookAuthenticationProvider
+  - name: GithubAuthenticationProvider
+  - name: GoogleAuthenticationProvider
   - name: AuthorizationProviders
   - name: Groups
   - name: Sessions
