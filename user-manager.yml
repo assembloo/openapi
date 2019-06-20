@@ -1101,15 +1101,16 @@ paths:
           $ref: '#/components/responses/UnauthorizedError'
         '404':
           description: Group not found
-  /{userManagerId}/groups/{groupId}/users/search:
+
+  /{userManagerId}/groups/{groupId}/members/search:
     parameters:
     - "$ref": "#/components/parameters/userManagerIdParam"
     - "$ref": "#/components/parameters/groupIdParam"
     post:
-      operationId: searchUsers
-      summary: Search the group's users
+      operationId: search
+      summary: Search the group's members
       tags:
-      - Groups
+      - GroupMembers
       requestBody:
         $ref: "#/components/requestBodies/SearchRequest"
       responses:
@@ -1117,15 +1118,16 @@ paths:
           $ref: '#/components/responses/SearchResponse'
         '401':
           $ref: '#/components/responses/UnauthorizedError'
-  /{userManagerId}/groups/{groupId}/users:
+
+  /{userManagerId}/groups/{groupId}/members:
     parameters:
     - "$ref": "#/components/parameters/userManagerIdParam"
     - "$ref": "#/components/parameters/groupIdParam"
     get:
-      operationId: listUsers
-      summary: List the group's users
+      operationId: list
+      summary: List the group's members
       tags:
-      - Groups
+      - GroupMembers
       parameters:
       - "$ref": "#/components/parameters/pageParam"
       responses:
@@ -1134,10 +1136,10 @@ paths:
         '401':
           $ref: '#/components/responses/UnauthorizedError'
     post:
-      operationId: addUser
-      summary: Add a user to the group
+      operationId: add
+      summary: Add a member to the group
       tags:
-      - Groups
+      - GroupMembers
       requestBody:
         $ref: "#/components/requestBodies/UserGroupRequest"
       responses:
@@ -1149,16 +1151,17 @@ paths:
           $ref: '#/components/responses/UnauthorizedError'
         '422':
           description: Invalid data
+
   /{userManagerId}/groups/{groupId}/users/{userId}:
     parameters:
     - "$ref": "#/components/parameters/userManagerIdParam"
     - "$ref": "#/components/parameters/groupIdParam"
     - "$ref": "#/components/parameters/userIdParam"
     delete:
-      operationId: removeUser
-      summary: Remove a user from a group
+      operationId: remove
+      summary: Remove a member from a group
       tags:
-      - Groups
+      - GroupMembers
       responses:
         '200':
           description: User successfully removed from group
@@ -1166,15 +1169,16 @@ paths:
           description: Bad request
         '401':
           $ref: '#/components/responses/UnauthorizedError'
+
   /{userManagerId}/groups/users/{userId}:
     parameters:
     - "$ref": "#/components/parameters/userManagerIdParam"
     - "$ref": "#/components/parameters/userIdParam"
     get:
-      operationId: getUserGroupIds
-      summary: Get the user's group ids
+      operationId: getMemberGroupIds
+      summary: Get the member's group ids
       tags:
-      - Groups
+      - GroupMembers
       responses:
         '200':
           $ref: '#/components/responses/GroupIdsResponse'
