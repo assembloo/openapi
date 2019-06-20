@@ -1107,7 +1107,6 @@ paths:
     - "$ref": "#/components/parameters/userManagerIdParam"
     - "$ref": "#/components/parameters/groupIdParam"
     post:
-      operationId: search
       summary: Search the group's members
       tags:
       - GroupMembers
@@ -1124,7 +1123,6 @@ paths:
     - "$ref": "#/components/parameters/userManagerIdParam"
     - "$ref": "#/components/parameters/groupIdParam"
     get:
-      operationId: list
       summary: List the group's members
       tags:
       - GroupMembers
@@ -1136,7 +1134,6 @@ paths:
         '401':
           $ref: '#/components/responses/UnauthorizedError'
     post:
-      operationId: add
       summary: Add a member to the group
       tags:
       - GroupMembers
@@ -1145,6 +1142,11 @@ paths:
       responses:
         '200':
           description: User successfully added to group
+          content:
+            application/json:
+              schema:
+                type: string
+                description: the ID of the created object
         '400':
           description: Bad request
         '401':
@@ -1157,33 +1159,52 @@ paths:
     - "$ref": "#/components/parameters/userManagerIdParam"
     - "$ref": "#/components/parameters/groupIdParam"
     - "$ref": "#/components/parameters/userIdParam"
+    get:
+      summary: Returns a member by ID
+      tags:
+      - GroupMembers
+      responses:
+        '200':
+          description: A user ID
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/GroupMembership"
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '404':
+          description: Group not found
     delete:
-      operationId: remove
       summary: Remove a member from a group
       tags:
       - GroupMembers
       responses:
         '200':
           description: User successfully removed from group
+          content:
+            application/json:
+              schema:
+                type: string
+                description: the ID of the deleted object
         '400':
           description: Bad request
         '401':
           $ref: '#/components/responses/UnauthorizedError'
 
-  /{userManagerId}/groups/members/{userId}:
-    parameters:
-    - "$ref": "#/components/parameters/userManagerIdParam"
-    - "$ref": "#/components/parameters/userIdParam"
-    get:
-      operationId: getMemberGroupIds
-      summary: Get the member's group ids
-      tags:
-      - GroupMembers
-      responses:
-        '200':
-          $ref: '#/components/responses/GroupIdsResponse'
-        '401':
-          $ref: '#/components/responses/UnauthorizedError'
+#  /{userManagerId}/groups/members/{userId}:
+#    parameters:
+#    - "$ref": "#/components/parameters/userManagerIdParam"
+#    - "$ref": "#/components/parameters/userIdParam"
+#    get:
+#      operationId: getMemberGroupIds
+#      summary: Get the member's group ids
+#      tags:
+#      - UserGroupMembers
+#      responses:
+#        '200':
+#          $ref: '#/components/responses/GroupIdsResponse'
+#        '401':
+#          $ref: '#/components/responses/UnauthorizedError'
 
 components:
   securitySchemes:
