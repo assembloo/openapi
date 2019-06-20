@@ -1152,7 +1152,7 @@ paths:
         '422':
           description: Invalid data
 
-  /{userManagerId}/groups/{groupId}/users/{userId}:
+  /{userManagerId}/groups/{groupId}/members/{userId}:
     parameters:
     - "$ref": "#/components/parameters/userManagerIdParam"
     - "$ref": "#/components/parameters/groupIdParam"
@@ -1170,7 +1170,7 @@ paths:
         '401':
           $ref: '#/components/responses/UnauthorizedError'
 
-  /{userManagerId}/groups/users/{userId}:
+  /{userManagerId}/groups/members/{userId}:
     parameters:
     - "$ref": "#/components/parameters/userManagerIdParam"
     - "$ref": "#/components/parameters/userIdParam"
