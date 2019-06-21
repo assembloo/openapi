@@ -1102,10 +1102,10 @@ paths:
         '404':
           description: Group not found
 
-  /{userManagerId}/groups/{groupId}/members/search:
+  ##### GROUP MEMBERS #####
+  /{userManagerId}/groups/members/search:
     parameters:
     - "$ref": "#/components/parameters/userManagerIdParam"
-    - "$ref": "#/components/parameters/groupIdParam"
     post:
       summary: Search the group's members
       tags:
@@ -1118,10 +1118,9 @@ paths:
         '401':
           $ref: '#/components/responses/UnauthorizedError'
 
-  /{userManagerId}/groups/{groupId}/members:
+  /{userManagerId}/groups/members:
     parameters:
     - "$ref": "#/components/parameters/userManagerIdParam"
-    - "$ref": "#/components/parameters/groupIdParam"
     get:
       summary: List the group's members
       tags:
@@ -1134,14 +1133,14 @@ paths:
         '401':
           $ref: '#/components/responses/UnauthorizedError'
     post:
-      summary: Add a member to the group
+      summary: Add a member to a group
       tags:
       - GroupMembers
       requestBody:
         $ref: "#/components/requestBodies/UserGroupRequest"
       responses:
         '200':
-          description: User successfully added to group
+          description: Member successfully added to group
           content:
             application/json:
               schema:
@@ -1154,18 +1153,17 @@ paths:
         '422':
           description: Invalid data
 
-  /{userManagerId}/groups/{groupId}/members/{userId}:
+  /{userManagerId}/groups/members/{groupMemberId}:
     parameters:
     - "$ref": "#/components/parameters/userManagerIdParam"
-    - "$ref": "#/components/parameters/groupIdParam"
-    - "$ref": "#/components/parameters/userIdParam"
+    - "$ref": "#/components/parameters/groupMemberIdParam"
     get:
       summary: Returns a member by ID
       tags:
       - GroupMembers
       responses:
         '200':
-          description: A user ID
+          description: A GroupMember
           content:
             application/json:
               schema:
@@ -1180,7 +1178,7 @@ paths:
       - GroupMembers
       responses:
         '200':
-          description: User successfully removed from group
+          description: GroupMember successfully deleted
           content:
             application/json:
               schema:
@@ -1190,21 +1188,6 @@ paths:
           description: Bad request
         '401':
           $ref: '#/components/responses/UnauthorizedError'
-
-#  /{userManagerId}/groups/members/{userId}:
-#    parameters:
-#    - "$ref": "#/components/parameters/userManagerIdParam"
-#    - "$ref": "#/components/parameters/userIdParam"
-#    get:
-#      operationId: getMemberGroupIds
-#      summary: Get the member's group ids
-#      tags:
-#      - UserGroupMembers
-#      responses:
-#        '200':
-#          $ref: '#/components/responses/GroupIdsResponse'
-#        '401':
-#          $ref: '#/components/responses/UnauthorizedError'
 
 components:
   securitySchemes:
@@ -1559,7 +1542,15 @@ components:
         type: string
       required: true
       description: The access token id
-      
+
+    groupMemberIdParam:
+      in: path
+      name: groupMemberId
+      schema:
+        type: string
+      required: true
+      description: The group member id
+
     groupIdParam:
       in: path
       name: groupId
