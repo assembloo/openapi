@@ -1330,35 +1330,15 @@ components:
 
     SigninRequest:
       type: object
-      discriminator:
-        propertyName: type
-        mapping:
-          password:  '#/components/schemas/PasswordSigninRequest'
-          oauth2:  '#/components/schemas/Oauth2SigninRequest'
-
-    PasswordSigninRequest:
-      allOf:
-      - $ref: '#/components/schemas/SigninRequest'
-      - type: object
-        properties:
-          email:
-            type: string
-          password:
-            type: string
-        required:
-          - email
-          - password
-
-    Oauth2SigninRequest:
-      allOf:
-      - $ref: '#/components/schemas/SigninRequest'
-      - type: object
-        properties:
-          callback_url:
-            type: string
-          provider_type:
-            $ref: '#/components/schemas/Oauth2ProviderType'
-            
+      properties:
+        email:
+          type: string
+        password:
+          type: string
+        callback_url:
+          type: string
+        provider_id:
+          $ref: '#/components/schemas/Oauth2ProviderType'          
 
     Oauth2ProviderType:
       type: string
