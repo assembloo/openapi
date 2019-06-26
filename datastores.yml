@@ -330,9 +330,10 @@ paths:
   /{datastoreId}/synonyms:
     parameters:
     - "$ref": "#/components/parameters/datastoreIdParam"
-    - "$ref": "#/components/parameters/pageParam"
     get:
       summary: List the synonyms sets available
+      parameters:
+      - "$ref": "#/components/parameters/pageParam"
       tags:
       - Synonyms
       responses:
