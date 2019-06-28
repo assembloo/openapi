@@ -625,7 +625,6 @@ components:
           type: string
       required:
       - id
-      additionalProperties: {}
       example:
         firstname: john
         lastname: doe
