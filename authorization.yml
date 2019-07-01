@@ -212,6 +212,11 @@ components:
           items:
             type: string
             description: any authorization description, could be a string representation of a wildcard authorization like printer:print:lp123
+        tags:
+          type: array
+          description: an optional array of tags that can be assigned to a role. Note that tags are free-form and are application-specific 
+          items:
+            type: string
       required:
       - role_id
 
