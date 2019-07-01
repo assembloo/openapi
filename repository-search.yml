@@ -46,6 +46,8 @@ components:
           default: 50
         relevance:
           $ref: '#/components/schemas/Relevance'
+        strictMode:
+          type: boolean
       required:
         - select
 
