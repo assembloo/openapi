@@ -357,7 +357,7 @@ paths:
                 description: the ID of the created object
         '401':
           $ref: '#/components/responses/UnauthorizedError'
-      
+
   /{datastoreId}/synonyms/{synonymSetId}:
     parameters:
     - "$ref": "#/components/parameters/datastoreIdParam"
@@ -405,62 +405,63 @@ paths:
                 description: the ID of the updated object
         '401':
           $ref: '#/components/responses/UnauthorizedError'
-  /{datastoreId}/synonyms/{synonymSetId}/{synonymId}:
-    parameters:
-    - "$ref": "#/components/parameters/datastoreIdParam"
-    - "$ref": "#/components/parameters/synonymSetIdParam"
-    - in: path
-      name: synonymId
-      schema:
-        type: string
-      required: true
-      description: Numeric ID of the synonym entry inside the set
-    get:
-      summary: Returns a synonym entry by ID
-      operationId: getSynonym
-      tags:
-      - Synonyms
-      responses:
-        '200':
-          description: A synonym entry
-          content:
-            application/json:
-              schema:
-                type: string
-        '401':
-          $ref: '#/components/responses/UnauthorizedError'
-    delete:
-      summary: Deletes a synonym entry by ID
-      operationId: deleteSynonym
-      tags:
-      - Synonyms
-      responses:
-        '200':
-          description: The synonym entry was deleted
-          content:
-            application/json:
-              schema:
-                type: string
-                description: the ID of the deleted object
-        '401':
-          $ref: '#/components/responses/UnauthorizedError'
-    put:
-      summary: Updates a synonym entry by ID
-      operationId: updateSynonym
-      tags:
-      - Synonyms
-      responses:
-        '200':
-          description: The synonym entry was updated
-          content:
-            application/json:
-              schema:
-                type: string
-                description: the ID of the updated object
-        '401':
-          $ref: '#/components/responses/UnauthorizedError'
+
+#  /{datastoreId}/synonyms/{synonymSetId}/{synonymId}:
+#    parameters:
+#    - "$ref": "#/components/parameters/datastoreIdParam"
+#    - "$ref": "#/components/parameters/synonymSetIdParam"
+#    - in: path
+#      name: synonymId
+#      schema:
+#        type: string
+#      required: true
+#      description: Numeric ID of the synonym entry inside the set
+#    get:
+#      summary: Returns a synonym entry by ID
+#      operationId: getSynonym
+#      tags:
+#      - Synonyms
+#      responses:
+#        '200':
+#          description: A synonym entry
+#          content:
+#            application/json:
+#              schema:
+#                type: string
+#        '401':
+#          $ref: '#/components/responses/UnauthorizedError'
+#    delete:
+#      summary: Deletes a synonym entry by ID
+#      operationId: deleteSynonym
+#      tags:
+#      - Synonyms
+#      responses:
+#        '200':
+#          description: The synonym entry was deleted
+#          content:
+#            application/json:
+#              schema:
+#                type: string
+#                description: the ID of the deleted object
+#        '401':
+#          $ref: '#/components/responses/UnauthorizedError'
+#    put:
+#      summary: Updates a synonym entry by ID
+#      operationId: updateSynonym
+#      tags:
+#      - Synonyms
+#      responses:
+#        '200':
+#          description: The synonym entry was updated
+#          content:
+#            application/json:
+#              schema:
+#                type: string
+#                description: the ID of the updated object
+#        '401':
+#          $ref: '#/components/responses/UnauthorizedError'
           
-##### SEARCH PRESETS (TODO) #####
+###### SEARCH PRESETS (TODO) #####
 #  /datastores/{datastoreId}/search-presets:
 #    parameters:
 #    - "$ref": "#/components/parameters/datastoreIdParam"
@@ -625,7 +626,6 @@ components:
           type: string
       required:
       - id
-      additionalProperties: {}
       example:
         firstname: john
         lastname: doe
