@@ -483,6 +483,20 @@ paths:
         '400':
           description: Bad request
 
+  /{userManagerId}/authentication/assembloo/signout:
+    parameters:
+    - "$ref": "#/components/parameters/userManagerIdParam"
+    get:
+      summary: sign the user out
+      operationId: doAssemblooSignout
+      tags:
+      - Authentication
+      responses:
+        '200':
+          description: the user was signed-out
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+
   /{userManagerId}/authentication/facebook/signin:
     parameters:
     - "$ref": "#/components/parameters/userManagerIdParam"
