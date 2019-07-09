@@ -1,0 +1,187 @@
+openapi: 3.0.1
+servers:
+  - description: Assembloo test1 API
+    url: http://sd-132400.dedibox.fr:8001/v1/storage
+  - description: Assembloo production API
+    url: https://storage.assembloo.com
+info:
+  description: |
+    Assembloo Public API for storage (S3 compatible).
+  version: "v1"
+  title: Assembloo Storage
+  contact:
+    email: support@assembloo.com
+  license:
+    name: Apache 2.0
+    url: 'http://www.apache.org/licenses/LICENSE-2.0.html'
+paths:
+##### STORAGE INSTANCES #####
+  /:
+    post:
+      summary: Creates a new storage service
+      tags:
+      - Storage
+      requestBody:
+        $ref: "#/components/requestBodies/StorageServiceRequest"
+      responses:
+        '200':
+          description: Storage service successfully created
+          content:
+            application/json:
+              schema:
+                type: string
+                description: the ID of the created object
+        '400':
+          description: Bad request
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '409':
+          description: Conflict
+        '422':
+          description: Invalid storage service data
+  /{serviceId}:
+    parameters:
+    - "$ref": "#/components/parameters/serviceIdParam"
+    get:
+      summary: Returns a storage service object by ID
+      tags:
+      - Storage
+      responses:
+        '200':
+          description: A storage service object
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Storage"
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '404':
+          description: Storage service not found
+    put:
+      summary: Updates a storage service by ID
+      tags:
+      - Storage
+      requestBody:
+        $ref: "#/components/requestBodies/StorageServiceRequest"
+      responses:
+        '200':
+          description: The storage service was updated
+          content:
+            application/json:
+              schema:
+                type: string
+                description: the ID of the updated object
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '404':
+          description: Storage service not found
+    delete:
+      summary: Deletes a storage service by ID
+      tags:
+      - Storage
+      responses:
+        '200':
+          description: The storage service was deleted
+          content:
+            application/json:
+              schema:
+                type: string
+                description: the ID of the deleted object
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '404':
+          description: Storage service not found
+
+          
+##### S3 API #####
+# We support only a subset of the S3 API
+
+  /{serviceId}/s3:
+    parameters:
+    - "$ref": "#/components/parameters/serviceIdParam"
+    get:
+      summary: "Returns a list of all buckets owned by the authenticated sender of the request."
+      tags:
+      - S3
+      responses:
+        '200':
+          $ref: '#/components/responses/ListBucketsOutputResponse'
+
+           
+components:
+
+  schemas:
+  
+    Storage:
+      type: object
+      properties:
+        id:
+          type: string
+      required:
+      - id
+      example:
+        id: my-storage
+        
+    ListBucketsOutput:
+      type: object
+      properties:
+        Buckets:
+          $ref: '#/components/schemas/Buckets'
+        Owner:
+          $ref: '#/components/schemas/Owner'
+    
+    Buckets:
+      type: array
+      items:
+        type: object
+        properties:
+          CreationDate:
+            type: string
+          Name:
+            type: string
+    
+    Owner:
+      type: object
+      properties:
+        DisplayName:
+          type: string
+        ID:
+          type: string
+
+    
+  parameters:
+    serviceIdParam:
+      in: path
+      name: serviceId
+      schema:
+        type: string
+      required: true
+      description: The service id
+        
+  requestBodies:
+    StorageServiceRequest:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Storage"
+                
+  responses:
+    UnauthorizedError:
+      description: Access token is missing or invalid
+      
+    ListBucketsOutputResponse:
+      description: Response to get the list of buckets
+      content:
+        text/xml:
+          schema:
+            $ref: '#/components/schemas/ListBucketsOutput'
+
+ 
+tags:
+  - name: Storage
+    description: "A storage object is the base of the API. It can be accessed with an S3 API"
+  - name: S3
+    description: "An S3 compatible API to access a storage object. Note that not all calls are available at the moment.<br><br> Only the root call is shown here, but calls to /{Bucket} and /{Bucket}/{Key} are also available on this endpoint"
+    
+# EOF
