@@ -483,6 +483,20 @@ paths:
         '400':
           description: Bad request
 
+  /{userManagerId}/authentication/assembloo/signout:
+    parameters:
+    - "$ref": "#/components/parameters/userManagerIdParam"
+    get:
+      summary: sign the user out
+      operationId: doAssemblooSignout
+      tags:
+      - Authentication
+      responses:
+        '200':
+          description: the user was signed-out
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+
   /{userManagerId}/authentication/facebook/signin:
     parameters:
     - "$ref": "#/components/parameters/userManagerIdParam"
@@ -1370,10 +1384,10 @@ components:
     NewPasswordRequest:
       type: object
       properties:
-        old_password:
+        oldPassword:
           type: string
           description: if there is one, we need the old password for security
-        new_password:
+        newPassword:
           type: string
           description: the new password we want for that user
       required:

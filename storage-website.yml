@@ -1,0 +1,73 @@
+openapi: 3.0.1
+servers:
+  - description: Assembloo test1 API
+    url: http://sd-132400.dedibox.fr:8001/v1/storage-website
+  - description: Assembloo production API
+    url: https://storage-website.assembloo.com
+info:
+  description: |
+    Assembloo Public API to host a static website in a bucket
+  version: "v1"
+  title: Assembloo Storage Website
+  contact:
+    email: support@assembloo.com
+  license:
+    name: Apache 2.0
+    url: 'http://www.apache.org/licenses/LICENSE-2.0.html'
+paths:
+##### ROOT #####
+  /:
+    get:
+      summary: Retrieves a file from a bucket as a web static resource
+      tags:
+      - Website
+      responses:
+        # https://docs.aws.amazon.com/AmazonS3/latest/dev/CustomErrorDocSupport.html
+        '200':
+          description: OK
+        '301':
+          description: Moved Permanently
+        '302':
+          description: Found
+        '304':
+          description: Not Modified
+        '400':
+          description: Bad request
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+        '500': 
+          description: Service Error
+        '503':
+          description: Service Unavailable
+    head:
+      summary: As the GET call, but returns the headers only
+      tags:
+      - Website
+      responses:
+        '200':
+          description: OK
+        '301':
+          description: Moved Permanently
+        '302':
+          description: Found
+        '304':
+          description: Not Modified
+        '400':
+          description: Bad request
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+        '500': 
+          description: Service Error
+        '503':
+          description: Service Unavailable
+    
+           
+tags:
+  - name: Website
+    description: "Supports only GET and HEAD requests on objects inside a bucket"
+    
+# EOF
