@@ -11,13 +11,13 @@ info:
     
 paths:
 
-##### ROLE DEFINITIONS #####
+##### AUTHORIZATIONS #####
 
-  /role_definitions/search:
+  /authorizations/search:
     post:
-      summary: Search the role definitions
+      summary: Search authorizations
       tags:
-      - RoleDefinitions
+      - Authorizations
       requestBody:
         $ref: "#/components/requestBodies/SearchRequest"
       responses:
@@ -25,11 +25,11 @@ paths:
           $ref: '#/components/responses/SearchResponse'
         '401':
           $ref: '#/components/responses/UnauthorizedError'
-  /role_definitions:
+  /authorizations:
     get:
-      summary: List the role definitions
+      summary: List authorizations
       tags:
-      - RoleDefinitions
+      - Authorizations
       parameters:
       - "$ref": "#/components/parameters/pageParam"
       responses:
@@ -38,14 +38,14 @@ paths:
         '401':
           $ref: '#/components/responses/UnauthorizedError'
     post:
-      summary: Creates a role definition
+      summary: Creates an authorization
       tags:
-      - RoleDefinitions
+      - Authorizations
       requestBody:
-        $ref: "#/components/requestBodies/RoleDefinitionRequest"
+        $ref: "#/components/requestBodies/AuthorizationRequest"
       responses:
         '200':
-          description: Role definition successfully created
+          description: Authorization successfully created
           content:
             application/json:
               schema:
@@ -56,34 +56,34 @@ paths:
         '401':
           $ref: '#/components/responses/UnauthorizedError'
         '422':
-          description: Invalid role definition data
-  /role_definitions/{roleDefinitionId}:
+          description: Invalid authorization definition
+  /authorizations/{authorizationId}:
     parameters:
-    - "$ref": "#/components/parameters/roleDefinitionIdParam"
+    - "$ref": "#/components/parameters/authorizationIdParam"
     get:
-      summary: Returns a role definition by ID
+      summary: Returns an authorization by ID
       tags:
-      - RoleDefinitions
+      - Authorizations
       responses:
         '200':
-          description: A role definition
+          description: An authorization
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/RoleDefinition"
+                $ref: "#/components/schemas/Authorization"
         '401':
           $ref: '#/components/responses/UnauthorizedError'
         '404':
           description: Authorization not found
     put:
-      summary: Updates a role definition
+      summary: Updates an authorization
       tags:
-      - RoleDefinitions
+      - Authorizations
       requestBody:
-        $ref: "#/components/requestBodies/RoleDefinitionRequest"
+        $ref: "#/components/requestBodies/AuthorizationRequest"
       responses:
         '200':
-          description: Role definition successfully updated
+          description: authorization successfully updated
           content:
             application/json:
               schema:
@@ -94,14 +94,14 @@ paths:
         '401':
           $ref: '#/components/responses/UnauthorizedError'
         '422':
-          description: Invalid role definition data
+          description: Invalid authorization definition
     delete:
-      summary: Deletes a role definition by ID
+      summary: Deletes a authorization by ID
       tags:
-      - RoleDefinitions
+      - Authorizations
       responses:
         '200':
-          description: The role definition was deleted
+          description: The authorization was deleted
           content:
             application/json:
               schema:
@@ -110,16 +110,14 @@ paths:
         '401':
           $ref: '#/components/responses/UnauthorizedError'
         '404':
-          description: Role definition not found
+          description: Authorization not found          
           
-          
-##### ROLE ASSIGNMENTS #####
-
-  /role_assignments/search:
+##### AUTHORIZATION ASSIGNMENTS #####
+  /authorizations/assignments/search:
     post:
-      summary: Search the role assignments
+      summary: Search the authorization assignments
       tags:
-      - RoleAssignments
+      - AuthorizationAssignments
       requestBody:
         $ref: "#/components/requestBodies/SearchRequest"
       responses:
@@ -127,11 +125,12 @@ paths:
           $ref: '#/components/responses/SearchResponse'
         '401':
           $ref: '#/components/responses/UnauthorizedError'
-  /role_assignments:
+          
+  /authorizations/assignments:
     get:
-      summary: List the role assignments
+      summary: List the authorization assignments
       tags:
-      - RoleAssignments
+      - AuthorizationAssignments
       parameters:
       - "$ref": "#/components/parameters/pageParam"
       responses:
@@ -140,14 +139,14 @@ paths:
         '401':
           $ref: '#/components/responses/UnauthorizedError'
     post:
-      summary: Creates a role assignment
+      summary: Creates a authorization assignment
       tags:
-      - RoleAssignments
+      - AuthorizationAssignments
       requestBody:
-        $ref: "#/components/requestBodies/RoleAssignmentRequest"
+        $ref: "#/components/requestBodies/AuthorizationAssignmentRequest"
       responses:
         '200':
-          description: Role assignment successfully created
+          description: authorization assignment successfully created
           content:
             application/json:
               schema:
@@ -158,32 +157,32 @@ paths:
         '401':
           $ref: '#/components/responses/UnauthorizedError'
         '422':
-          description: Invalid role assignment data
-  /role_assignments/{roleAssignmentId}:
+          description: Invalid authorization assignment data
+  /authorizations/assignments/{authorizationAssignmentId}:
     parameters:
-    - "$ref": "#/components/parameters/roleAssignmentIdParam"
+    - "$ref": "#/components/parameters/authorizationAssignmentIdParam"
     get:
-      summary: Returns a role assignment by ID
+      summary: Returns a authorization assignment by ID
       tags:
-      - RoleAssignments
+      - AuthorizationAssignments
       responses:
         '200':
-          description: A role assignment
+          description: A authorization assignment
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/RoleAssignment"
+                $ref: "#/components/schemas/AuthorizationAssignment"
         '401':
           $ref: '#/components/responses/UnauthorizedError'
         '404':
-          description: Role assignment not found
+          description: Authorization assignment not found
     delete:
-      summary: Deletes a role assignment by ID
+      summary: Deletes a authorization assignment by ID
       tags:
-      - RoleAssignments
+      - AuthorizationAssignments
       responses:
         '200':
-          description: The role assignment was deleted
+          description: The authorization assignment was deleted
           content:
             application/json:
               schema:
@@ -192,55 +191,83 @@ paths:
         '401':
           $ref: '#/components/responses/UnauthorizedError'
         '404':
-          description: Role assignment not found
-  
-  
+          description: Authorization assignment not found
+
 components:
-
   schemas:
-
-    RoleDefinition:
+    Authorization:
       type: object
-      description: a list of roles with their permissions
+      description: represents an Authorization
       properties:
         id:
           type: string
         description:
           type: string
-        authorizations:
+        attributes:
           type: array
+          description: an optional array of tags that can be assigned to an authorization. Note that tags are completely free-form
           items:
-            type: string
-            description: any authorization description, could be a string representation of a wildcard authorization like printer:print:lp123
-        tags:
-          type: array
-          description: an optional array of tags that can be assigned to a role. Note that tags are free-form and are application-specific 
-          items:
+          type: object
+          additionalProperties:
             type: string
       required:
       - role_id
 
-    RoleAssignment:
+    RoleBasedAuthorization:
+      allOf:
+      - $ref: '#/components/schemas/Authorization'
+      - type: object
+      description: represents a role along with it's related authorizations
+      properties:
+        authorizations:
+          type: array
+          description: an optional list of authorization
+          items:
+            $ref: '#/components/schemas/RoleAssignableAuthorization'
+            description: the definitin of an authorization
+
+    RoleAssignableAuthorization:
+      oneOf:
+        - $ref: '#/components/schemas/PermissionBasedAuthorization'
+        - $ref: '#/components/schemas/WildcardBasedAuthorization'
+      description: represents a authorization that can be assigned to a role
+      discriminator:
+        propertyName: objectType
+        mapping:
+          permission: '#/components/schemas/PermissionBasedAuthorization'
+          wildcard: '#/components/schemas/WildcardBasedAuthorization'
+
+    PermissionBasedAuthorization:
+      allOf:
+      - $ref: '#/components/schemas/Authorization'
+      - type: object
+      description: represents a permission
+
+    WildcardBasedAuthorization:
+      allOf:
+      - $ref: '#/components/schemas/Authorization'
+      - type: object
+      description: the definitin of a wildcard permission such as 'printer:print:lp123' or 'printer:*'
+
+    AuthorizationAssignment:
       type: object
-      description: List of roles given to users on specific resources
+      description: List of authorization given to users on specific resources
       properties:
         id:
           type: string
         subject_id:
           type: string
-          description: user or group this role applies to
-        role_id:
+          description: user or group this authorization applies to
+        authorization_id:
           type: string
-        resource_id:
+        resource:
           type: string
-          description: the path to the resource that the role applies to
+          description: the path to the resource that the authorization applies to
       required:
       - subject_id
-      - role_id
-      - resource_id
+      - authorization_id
+      - resource
 
-    # AssignedPermissions will be defined later if needed
-        
   parameters:
     pageParam:
       name: page
@@ -250,20 +277,20 @@ components:
         type: integer
         minimum: 0
         default: 0
-    roleDefinitionIdParam:
+    authorizationIdParam:
       in: path
-      name: roleDefinitionId
+      name: authorizationId
       schema:
         type: string
       required: true
-      description: The role definition id
-    roleAssignmentIdParam:
+      description: The authorization id
+    authorizationAssignmentIdParam:
       in: path
-      name: roleAssignmentId
+      name: authorizationAssignmentId
       schema:
         type: string
       required: true
-      description: The role assignment id
+      description: The authorization assignment id
 
   requestBodies:
     SearchRequest:
@@ -274,19 +301,19 @@ components:
           schema:
             $ref: "https://raw.githubusercontent.com/assembloo/openapi/1.0.0/repository-search.yml#/components/schemas/SearchRequest"
             
-    RoleDefinitionRequest:
+    AuthorizationRequest:
       required: true
       content:
         application/json:
           schema:
-            $ref: "#/components/schemas/RoleDefinition"
+            $ref: "#/components/schemas/Authorization"
             
-    RoleAssignmentRequest:
+    AuthorizationAssignmentRequest:
       required: true
       content:
         application/json:
           schema:
-            $ref: "#/components/schemas/RoleAssignment"
+            $ref: "#/components/schemas/AuthorizationAssignment"
     
   responses:
     UnauthorizedError:
@@ -300,7 +327,7 @@ components:
             $ref: "https://raw.githubusercontent.com/assembloo/openapi/1.0.0/repository-search.yml#/components/schemas/SearchResponse"
   
 tags:
-  - name: RoleDefinitions
-  - name: RoleAssignments
+  - name: Authorizations
+  - name: AuthorizationAssignments
 
 # EOF
