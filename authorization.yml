@@ -217,25 +217,14 @@ components:
       allOf:
       - $ref: '#/components/schemas/Authorization'
       - type: object
-      description: represents a role along with it's related authorizations
-      properties:
-        authorizations:
-          type: array
-          description: an optional list of authorization
-          items:
-            $ref: '#/components/schemas/RoleAssignableAuthorization'
-            description: the definitin of an authorization
-
-    RoleAssignableAuthorization:
-      oneOf:
-        - $ref: '#/components/schemas/PermissionBasedAuthorization'
-        - $ref: '#/components/schemas/WildcardBasedAuthorization'
-      description: represents a authorization that can be assigned to a role
-      discriminator:
-        propertyName: objectType
-        mapping:
-          permission: '#/components/schemas/PermissionBasedAuthorization'
-          wildcard: '#/components/schemas/WildcardBasedAuthorization'
+        description: represents a role along with it's related authorizations
+        properties:
+          authorizations:
+            type: array
+            description: an optional list of authorization
+            items:
+              type: string
+              description: the definitin of an authorization
 
     PermissionBasedAuthorization:
       allOf:
