@@ -211,7 +211,13 @@ components:
           additionalProperties:
             type: string
       required:
-      - role_id
+      - id
+      discriminator:
+        propertyName: authorizationType
+        mapping:
+          role: '#/components/schemas/RoleBasedAuthorization'
+          permission: '#/components/schemas/PermissionBasedAuthorization'
+          wildcard:  '#/components/schemas/WildcardBasedAuthorization'      
 
     RoleBasedAuthorization:
       allOf:
