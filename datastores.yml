@@ -607,6 +607,9 @@ components:
           description: name of the field
         type:
           $ref: '#/components/schemas/FieldType'
+        multivalued:
+          type: boolean
+          description: is this field an array ?
 
     FieldType:
       type: string
